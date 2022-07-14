@@ -1,0 +1,35 @@
+{
+    "name": "bfg/wood",
+    "description": "",
+    "type": "bfg-app",
+    "keywords": ["laravel", "extension", "wood"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "bfg"
+        }
+    ],
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.0.0"
+    },
+    "require-dev": {},
+    "autoload": {
+        "psr-4": {
+            "Bfg\\Wood\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Bfg\\Wood\\ServiceProvider"
+            ],
+            "aliases": {
+                "Wood": "Bfg\\Wood\\Facade"
+            }
+        }
+    }
+}
