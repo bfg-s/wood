@@ -29,6 +29,13 @@ class WoodInstallCommand extends Command
 
     public function handle(): int
     {
+        $dbFile = database_path('wood.sqlite');
+
+        if (! is_file($dbFile)) {
+
+            file_put_contents($dbFile, '');
+        }
+
         $this->connection = Schema::connection('wood');
 
         $this->defaultTables();
