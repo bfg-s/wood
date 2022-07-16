@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Observer extends ModelTopic
 {
-    public string $icon = 'fas fa-telescope';
+    public string $icon = 'fas fa-eye';
 
     public ?string $name = 'Model observers';
 
