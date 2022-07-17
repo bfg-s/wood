@@ -12,6 +12,8 @@ class SeedRow extends ModelTopic
 
     public ?string $description = 'The rows of seeder';
 
+    public ?string $parent = Seed::class;
+
     /**
      * @var array
      */
