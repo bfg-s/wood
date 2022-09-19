@@ -93,7 +93,7 @@ abstract class ModelTopic extends Model
     /**
      * @throws Exception
      */
-    protected static function createSchemaRow($field, $config): array
+    protected static function createSchemaRow($field, $config, bool $visible = true): array
     {
         $rs = (array)$config;
 
@@ -197,13 +197,13 @@ abstract class ModelTopic extends Model
             $foreignKey = preg_replace('/.*\.(.*)/', '$1', $foreignKey);
             if ($foreignKey !== 'id') {
                 $relatedModel::${'schema'}[$foreignKey]
-                    = static::createSchemaRow($foreignKey, $relatedParams);
+                    = static::createSchemaRow($foreignKey, $relatedParams, false);
             }
             $localKey = $relation->getLocalKeyName();
             $localKey = preg_replace('/.*\.(.*)/', '$1', $localKey);
             if ($localKey !== 'id') {
                 static::$schema[$localKey]
-                    = static::createSchemaRow($localKey, $relatedParams);
+                    = static::createSchemaRow($localKey, $relatedParams, false);
             }
 
             $rs['schema'] = $relatedModel::class;
@@ -229,6 +229,8 @@ abstract class ModelTopic extends Model
             $rs['methods']['unique'] = [];
             $rs['unique'] = true;
         }
+
+        $rs['visible'] = $visible;
 
         return $rs;
     }

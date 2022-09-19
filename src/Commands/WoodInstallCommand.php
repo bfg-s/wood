@@ -2,6 +2,7 @@
 
 namespace Bfg\Wood\Commands;
 
+use Bfg\Wood\Models\Php;
 use Bfg\Wood\Models\Topic;
 use Bfg\Wood\ModelTopic;
 use Illuminate\Console\Command;
@@ -72,6 +73,62 @@ class WoodInstallCommand extends Command
 
             $this->info('Topics table, created!');
         }
+
+        if (!$this->connection->hasTable('php')) {
+
+            $this->connection->create('php', function (Blueprint $table) {
+                $table->id();
+                $table->enum('type', ['class', 'interface', 'trait']);
+                $table->string('file');
+                $table->bigInteger('inode');
+                $table->string('name');
+                $table->json('methods')->nullable();
+            });
+
+            $this->info('PHP table, created!');
+        }
+
+        $this->freshPhpTable();
+    }
+
+    protected function freshPhpTable()
+    {
+//        foreach (get_declared_classes() as $declared_class) {
+//
+//            Php::createOrUpdatePhp($declared_class);
+//        }
+//
+//        foreach (get_declared_traits() as $declared_trait) {
+//
+//            Php::createOrUpdatePhp($declared_trait);
+//        }
+//
+//        foreach (get_declared_interfaces() as $declared_interface) {
+//
+//            Php::createOrUpdatePhp($declared_interface);
+//        }
+
+        $res = get_declared_classes();
+        $autoloaderClassName = '';
+        foreach ( $res as $className) {
+            if (str_starts_with($className, 'ComposerAutoloaderInit')) {
+                $autoloaderClassName = $className;
+                break;
+            }
+        }
+        $classLoader = $autoloaderClassName::getLoader();
+
+        foreach ($classLoader->getClassMap() as $class => $path) {
+            $path = str_replace(base_path(), '', realpath($path));
+            if (
+                ! str_starts_with($path, '/vendor/doctrine')
+                && ! str_starts_with($path, '/vendor/psy')
+            ) {
+                Php::createOrUpdatePhp($class);
+            }
+        }
+
+        Php::where('inode', 0)->delete();
     }
 
     protected function createTable(ModelTopic $topic)
