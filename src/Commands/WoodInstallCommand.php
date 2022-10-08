@@ -14,7 +14,10 @@ use Wood;
 
 class WoodInstallCommand extends Command
 {
-    protected $signature = "wood:install {--f|force : Recreate tables}";
+    protected $signature = "wood:install
+    {--p|php : With php}
+    {--f|force : Recreate tables}
+    ";
 
     protected $description = "Install wood schema";
 
@@ -49,6 +52,8 @@ class WoodInstallCommand extends Command
             fn ($topic) => $this->createTable(app($topic))
         );
 
+        $this->freshPhpTable();
+
         $this->info('Finished!');
 
         return 0;
@@ -73,6 +78,11 @@ class WoodInstallCommand extends Command
 
             $this->info('Topics table, created!');
         }
+    }
+
+    protected function freshPhpTable()
+    {
+        $notExists = false;
 
         if (!$this->connection->hasTable('php')) {
 
@@ -86,49 +96,34 @@ class WoodInstallCommand extends Command
             });
 
             $this->info('PHP table, created!');
+
+            $notExists = true;
         }
 
-        $this->freshPhpTable();
-    }
+        if ($this->option('php') || $notExists) {
 
-    protected function freshPhpTable()
-    {
-//        foreach (get_declared_classes() as $declared_class) {
-//
-//            Php::createOrUpdatePhp($declared_class);
-//        }
-//
-//        foreach (get_declared_traits() as $declared_trait) {
-//
-//            Php::createOrUpdatePhp($declared_trait);
-//        }
-//
-//        foreach (get_declared_interfaces() as $declared_interface) {
-//
-//            Php::createOrUpdatePhp($declared_interface);
-//        }
-
-        $res = get_declared_classes();
-        $autoloaderClassName = '';
-        foreach ( $res as $className) {
-            if (str_starts_with($className, 'ComposerAutoloaderInit')) {
-                $autoloaderClassName = $className;
-                break;
+            $res = get_declared_classes();
+            $autoloaderClassName = '';
+            foreach ( $res as $className) {
+                if (str_starts_with($className, 'ComposerAutoloaderInit')) {
+                    $autoloaderClassName = $className;
+                    break;
+                }
             }
-        }
-        $classLoader = $autoloaderClassName::getLoader();
+            $classLoader = $autoloaderClassName::getLoader();
 
-        foreach ($classLoader->getClassMap() as $class => $path) {
-            $path = str_replace(base_path(), '', realpath($path));
-            if (
-                ! str_starts_with($path, '/vendor/doctrine')
-                && ! str_starts_with($path, '/vendor/psy')
-            ) {
-                Php::createOrUpdatePhp($class);
+            foreach ($classLoader->getClassMap() as $class => $path) {
+                $path = str_replace(base_path(), '', realpath($path));
+                if (
+                    ! str_starts_with($path, '/vendor/doctrine')
+                    && ! str_starts_with($path, '/vendor/psy')
+                ) {
+                    Php::createOrUpdatePhp($class);
+                }
             }
-        }
 
-        Php::where('inode', 0)->delete();
+            Php::where('inode', 0)->delete();
+        }
     }
 
     protected function createTable(ModelTopic $topic)

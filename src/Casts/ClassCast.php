@@ -8,11 +8,6 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 class ClassCast implements CastsAttributes
 {
     /**
-     * @var string
-     */
-    protected string $comCodeDriver = "class";
-
-    /**
      * Cast the given value.
      *
      * @param  ModelTopic  $model

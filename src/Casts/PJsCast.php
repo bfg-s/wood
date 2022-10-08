@@ -18,7 +18,17 @@ class PJsCast implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes): mixed
     {
-        return $value;
+        $value = $value && preg_match('/^faker.*/', $value)
+            ? 'this.' . $value
+            : $value;
+
+        return $value ? preg_replace(
+            '/([A-z\d)])[.?]([A-z\d])/',
+            '$1->$2',
+            ! preg_match('/^[A-z\d]+\(/', $value)
+                ? '$' . $value
+                : $value
+        ) : null;
     }
 
     /**

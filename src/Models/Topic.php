@@ -4,6 +4,36 @@ namespace Bfg\Wood\Models;
 
 use Bfg\Wood\ModelTopic;
 
+/**
+ * Bfg\Wood\Models\Topic
+ *
+ * @property int $id
+ * @property string $name
+ * @property string|null $description
+ * @property string $icon
+ * @property string $table
+ * @property string $topic
+ * @property string|null $parent_topic
+ * @property array $settings
+ * @property array $schema
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereParentTopic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereSchema($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereSettings($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereTable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereTopic($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Topic whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Topic extends ModelTopic
 {
     protected $fillable = [
@@ -66,7 +96,8 @@ class Topic extends ModelTopic
         }
 
         $model->update(array_merge($data, [
-            'settings' => $settings
+            'settings' => $settings,
+            'schema' => $topic::$schema,
         ]));
     }
 }

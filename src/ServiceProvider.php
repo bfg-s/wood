@@ -14,6 +14,22 @@ class ServiceProvider extends IlluminateServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/wood.php',
+            'wood'
+        );
+    }
+
+    /**
+     * Bootstrap services.
+     * @return void
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__ . '/../config/wood.php' => config_path('wood.php')
+        ], 'wood-config');
+
         config(Arr::dot([
             'wood' => [
                 'driver' => 'sqlite',
@@ -23,14 +39,11 @@ class ServiceProvider extends IlluminateServiceProvider
                 'foreign_key_constraints' => true
             ]
         ], 'database.connections.'));
-    }
 
-    /**
-     * Bootstrap services.
-     * @return void
-     */
-    public function boot()
-    {
+        config(Arr::dot([
+            'wood' => config('wood.connection')
+        ], 'database.connections.'));
+
         $this->commands([
             WoodInstallCommand::class
         ]);

@@ -19,6 +19,8 @@ abstract class ModelTopic extends Model
      */
     protected $connection = 'wood';
 
+    protected static array $iteration = [];
+
     /**
      * @var array
      */
@@ -88,6 +90,10 @@ abstract class ModelTopic extends Model
             static::$schema[$field]
                 = static::createSchemaRow($field, $config);
         }
+
+        static::$schema['order'] = static::createSchemaRow(
+            'order', ['integer', 'default' => 0], false
+        );
     }
 
     /**
@@ -167,6 +173,7 @@ abstract class ModelTopic extends Model
             && ! array_key_exists('default', $rs['methods'])
         ) {
             $rs['methods']['default'] = '[]';
+            $rs['default'] = '[]';
         }
 
         $self = new static();
@@ -231,6 +238,10 @@ abstract class ModelTopic extends Model
         }
 
         $rs['visible'] = $visible;
+        if (! isset(static::$iteration[static::class])) {
+            static::$iteration[static::class] = 0;
+        }
+        $rs['index'] = static::$iteration[static::class]++;
 
         return $rs;
     }

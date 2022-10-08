@@ -6,6 +6,26 @@ use Bfg\Wood\ModelTopic;
 use ReflectionClass;
 use ReflectionException;
 
+/**
+ * Bfg\Wood\Models\Php
+ *
+ * @property int $id
+ * @property string $type
+ * @property string $file
+ * @property int $inode
+ * @property string $name
+ * @property array|null $methods
+ * @method static \Illuminate\Database\Eloquent\Builder|Php newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Php newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Php query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Php whereFile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Php whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Php whereInode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Php whereMethods($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Php whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Php whereType($value)
+ * @mixin \Eloquent
+ */
 class Php extends ModelTopic
 {
     protected $table = 'php';

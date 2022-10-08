@@ -11,7 +11,9 @@
     ],
     "prefer-stable": true,
     "require": {
-        "php": ">=8.0.0"
+        "php": ">=8.0.0",
+        "bfg/comcode": "^0.6.5",
+        "laravel/framework": "^8|^9"
     },
     "require-dev": {},
     "autoload": {
