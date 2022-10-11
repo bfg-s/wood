@@ -58,14 +58,29 @@ use Bfg\Wood\ModelTopic;
  */
 class ModelField extends ModelTopic
 {
-    public string $icon = 'far fa-comment-dots';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'far fa-comment-dots';
 
-    public ?string $name = 'Model fields';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Model fields';
 
-    public ?string $description = 'The model fields';
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The model fields';
 
+    /**
+     * @var string|null
+     */
     public ?string $parent = Model::class;
 
+    /**
+     * @var array
+     */
     public static array $schema = [
         'name' => [
             'string',

@@ -2,13 +2,14 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\InterfaceSubject;
 use Bfg\Wood\ModelTopic;
 
 /**
  * Bfg\Wood\Models\ModelImplement
  *
  * @property int $id
- * @property mixed|null $class
+ * @property InterfaceSubject $class
  * @property int $order
  * @property int $model_id
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -26,12 +27,24 @@ use Bfg\Wood\ModelTopic;
  */
 class ModelImplement extends ModelTopic
 {
-    public string $icon = 'fas fa-award';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-award';
 
-    public ?string $name = 'Model interfaces';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Model interfaces';
 
-    public ?string $description = 'The model interfaces';
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The model interfaces';
 
+    /**
+     * @var string|null
+     */
     public ?string $parent = Model::class;
 
     /**

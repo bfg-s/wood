@@ -2,15 +2,16 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Wood\Generators\RequestGenerator;
 use Bfg\Wood\ModelTopic;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Bfg\Wood\Models\Request
  *
  * @property int $id
- * @property mixed|null $class
+ * @property ClassSubject $class
  * @property mixed|null $access
  * @property int $order
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -30,11 +31,25 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Request extends ModelTopic
 {
-    public string $icon = 'fas fa-broadcast-tower';
+    /**
+     * @var string|null
+     */
+    protected static ?string $generator = RequestGenerator::class;
 
-    public ?string $name = 'Requests';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-broadcast-tower';
 
-    public ?string $description = 'The laravel requests';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Requests';
+
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The laravel requests';
 
     /**
      * @var array
@@ -56,6 +71,9 @@ class Request extends ModelTopic
         ],
     ];
 
+    /**
+     * @return HasMany
+     */
     public function rules(): HasMany
     {
         return $this->hasMany(RequestRule::class);

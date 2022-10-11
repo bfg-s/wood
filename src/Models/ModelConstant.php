@@ -30,18 +30,34 @@ use Bfg\Wood\ModelTopic;
  */
 class ModelConstant extends ModelTopic
 {
-    public string $icon = 'fas fa-toolbox';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-toolbox';
 
-    public ?string $name = 'Model constants';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Model constants';
 
-    public ?string $description = 'The model constants';
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The model constants';
 
+    /**
+     * @var string|null
+     */
     public ?string $parent = Model::class;
 
+    /**
+     * @var array
+     */
     public static array $schema = [
         'name' => [
             'string',
             'info' => 'Constant name',
+            'regexp' => '^\w*$',
         ],
         'value' => [
             'pjs',

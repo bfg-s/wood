@@ -28,12 +28,24 @@ use Bfg\Wood\ModelTopic;
  */
 class ModelFactoryLine extends ModelTopic
 {
-    public string $icon = 'fas fa-industry';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-industry';
 
-    public ?string $name = 'Model factory lines';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Model factory lines';
 
-    public ?string $description = 'The lines of model factory';
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The lines of model factory';
 
+    /**
+     * @var string|null
+     */
     public ?string $parent = Model::class;
 
     /**
@@ -44,6 +56,7 @@ class ModelFactoryLine extends ModelTopic
             'string',
             'possibleTable' => 'model_fields:name',
             'info' => 'The factory line field',
+            'regexp' => '^\w*$',
         ],
         'php' => [
             'pjs',

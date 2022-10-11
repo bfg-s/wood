@@ -5,43 +5,35 @@ namespace Bfg\Wood\Commands;
 use Bfg\Wood\Models\Php;
 use Bfg\Wood\Models\Topic;
 use Bfg\Wood\ModelTopic;
-use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Schema\Builder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
 use Wood;
 
-class WoodInstallCommand extends Command
+class WoodInstallCommand extends BaseWoodCommand
 {
+    /**
+     * @var string
+     */
     protected $signature = "wood:install
     {--p|php : With php}
     {--f|force : Recreate tables}
     ";
 
-    protected $description = "Install wood schema";
-
     /**
-     * @var Builder
+     * @var string
      */
-    protected Builder $connection;
+    protected $description = "Install wood schema";
 
     /**
      * @var array
      */
     protected array $created = [];
 
+    /**
+     * @return int
+     */
     public function handle(): int
     {
-        $dbFile = database_path('wood.sqlite');
-
-        if (! is_file($dbFile)) {
-
-            file_put_contents($dbFile, '');
-        }
-
-        $this->connection = Schema::connection('wood');
-
         $this->defaultTables();
 
         $this->prepareModels(
@@ -52,14 +44,19 @@ class WoodInstallCommand extends Command
             fn ($topic) => $this->createTable(app($topic))
         );
 
-        $this->freshPhpTable();
+        $this->freshPhpTable(
+            $this->option('php')
+        );
 
         $this->info('Finished!');
 
         return 0;
     }
 
-    protected function defaultTables()
+    /**
+     * @return void
+     */
+    protected function defaultTables(): void
     {
         if (!$this->connection->hasTable('topics')) {
 
@@ -80,53 +77,11 @@ class WoodInstallCommand extends Command
         }
     }
 
-    protected function freshPhpTable()
-    {
-        $notExists = false;
-
-        if (!$this->connection->hasTable('php')) {
-
-            $this->connection->create('php', function (Blueprint $table) {
-                $table->id();
-                $table->enum('type', ['class', 'interface', 'trait']);
-                $table->string('file');
-                $table->bigInteger('inode');
-                $table->string('name');
-                $table->json('methods')->nullable();
-            });
-
-            $this->info('PHP table, created!');
-
-            $notExists = true;
-        }
-
-        if ($this->option('php') || $notExists) {
-
-            $res = get_declared_classes();
-            $autoloaderClassName = '';
-            foreach ( $res as $className) {
-                if (str_starts_with($className, 'ComposerAutoloaderInit')) {
-                    $autoloaderClassName = $className;
-                    break;
-                }
-            }
-            $classLoader = $autoloaderClassName::getLoader();
-
-            foreach ($classLoader->getClassMap() as $class => $path) {
-                $path = str_replace(base_path(), '', realpath($path));
-                if (
-                    ! str_starts_with($path, '/vendor/doctrine')
-                    && ! str_starts_with($path, '/vendor/psy')
-                ) {
-                    Php::createOrUpdatePhp($class);
-                }
-            }
-
-            Php::where('inode', 0)->delete();
-        }
-    }
-
-    protected function createTable(ModelTopic $topic)
+    /**
+     * @param  ModelTopic  $topic
+     * @return void
+     */
+    protected function createTable(ModelTopic $topic): void
     {
         $table = $topic->getTable();
 
@@ -157,7 +112,12 @@ class WoodInstallCommand extends Command
         Topic::createOrUpdateTopic($topic);
     }
 
-    protected function generateTableFields(Blueprint $table, ModelTopic $topic)
+    /**
+     * @param  Blueprint  $table
+     * @param  ModelTopic  $topic
+     * @return void
+     */
+    protected function generateTableFields(Blueprint $table, ModelTopic $topic): void
     {
         $table->id();
         foreach ($topic::$schema as $name => $item) {
@@ -171,6 +131,10 @@ class WoodInstallCommand extends Command
         $table->timestamps();
     }
 
+    /**
+     * @param  array  $models
+     * @return Collection
+     */
     protected function prepareModels(array $models): Collection
     {
         return collect($models)

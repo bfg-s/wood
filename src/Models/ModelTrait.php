@@ -2,13 +2,14 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\TraitSubject;
 use Bfg\Wood\ModelTopic;
 
 /**
  * Bfg\Wood\Models\ModelTrait
  *
  * @property int $id
- * @property mixed|null $class
+ * @property TraitSubject $class
  * @property int $order
  * @property int $model_id
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -26,12 +27,24 @@ use Bfg\Wood\ModelTopic;
  */
 class ModelTrait extends ModelTopic
 {
-    public string $icon = 'fas fa-file-contract';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-file-contract';
 
-    public ?string $name = 'Model traits';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Model traits';
 
-    public ?string $description = 'The model traits';
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The model traits';
 
+    /**
+     * @var string|null
+     */
     public ?string $parent = Model::class;
 
     /**

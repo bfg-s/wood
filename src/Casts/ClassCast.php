@@ -2,7 +2,10 @@
 
 namespace Bfg\Wood\Casts;
 
+use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Wood\ClassFactory;
 use Bfg\Wood\ModelTopic;
+use ErrorException;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 
 class ClassCast implements CastsAttributes
@@ -14,18 +17,13 @@ class ClassCast implements CastsAttributes
      * @param  string  $key
      * @param  mixed  $value
      * @param  array  $attributes
-     * @return mixed
+     * @return ClassSubject
+     * @throws ErrorException
      */
-    public function get($model, string $key, $value, array $attributes): mixed
+    public function get($model, string $key, $value, array $attributes): ClassSubject
     {
-//        if ($value) {
-//
-//            $value = json_decode($value, 1);
-//
-//
-//        }
-
-        return $value;
+        return app(ClassFactory::class)
+            ->class($value);
     }
 
     /**
@@ -39,7 +37,11 @@ class ClassCast implements CastsAttributes
      */
     public function set($model, string $key, $value, array $attributes): mixed
     {
-//        return json_encode([$value]);
+        if ($value instanceof ClassSubject) {
+
+            return $value->class;
+        }
+
         return $value;
     }
 }

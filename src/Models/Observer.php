@@ -2,6 +2,8 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Wood\Generators\ObserverGenerator;
 use Bfg\Wood\ModelTopic;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * Bfg\Wood\Models\Observer
  *
  * @property int $id
- * @property mixed|null $class
+ * @property ClassSubject $class
  * @property array $events
  * @property int $model_id
  * @property int $order
@@ -30,11 +32,25 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Observer extends ModelTopic
 {
-    public string $icon = 'fas fa-eye';
+    /**
+     * @var string|null
+     */
+    protected static ?string $generator = ObserverGenerator::class;
 
-    public ?string $name = 'Model observers';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-eye';
 
-    public ?string $description = 'The model observers';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Model observers';
+
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The model observers';
 
     /**
      * @var array
@@ -70,6 +86,9 @@ class Observer extends ModelTopic
         ],
     ];
 
+    /**
+     * @return HasOne
+     */
     public function model(): HasOne
     {
         return $this->hasOne(Model::class, 'id', 'model_id');

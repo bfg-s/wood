@@ -2,6 +2,8 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Wood\Generators\SeedGenerator;
 use Bfg\Wood\ModelTopic;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -10,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * Bfg\Wood\Models\Seed
  *
  * @property int $id
- * @property mixed|null $class
+ * @property ClassSubject $class
  * @property int $model_id
  * @property int $order
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -31,11 +33,25 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Seed extends ModelTopic
 {
-    public string $icon = 'fas fa-seedling';
+    /**
+     * @var string|null
+     */
+    protected static ?string $generator = SeedGenerator::class;
 
-    public ?string $name = 'Seeders';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-seedling';
 
-    public ?string $description = 'The laravel seeders';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Seeders';
+
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The laravel seeders';
 
     /**
      * @var array
@@ -57,11 +73,17 @@ class Seed extends ModelTopic
         ],
     ];
 
+    /**
+     * @return HasOne
+     */
     public function model(): HasOne
     {
         return $this->hasOne(Model::class, 'id', 'model_id');
     }
 
+    /**
+     * @return HasMany
+     */
     public function rows(): HasMany
     {
         return $this->hasMany(SeedRow::class);

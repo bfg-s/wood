@@ -31,12 +31,24 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class RequestRule extends ModelTopic
 {
-    public string $icon = 'fas fa-pencil-ruler';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-pencil-ruler';
 
-    public ?string $name = 'Request rule';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Request rule';
 
-    public ?string $description = 'The request rules';
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The request rules';
 
+    /**
+     * @var string|null
+     */
     public ?string $parent = Request::class;
 
     /**

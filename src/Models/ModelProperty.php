@@ -30,18 +30,34 @@ use Bfg\Wood\ModelTopic;
  */
 class ModelProperty extends ModelTopic
 {
-    public string $icon = 'fas fa-id-card';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-id-card';
 
-    public ?string $name = 'Model properties';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Model properties';
 
-    public ?string $description = 'The model properties';
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The model properties';
 
+    /**
+     * @var string|null
+     */
     public ?string $parent = Model::class;
 
+    /**
+     * @var array
+     */
     public static array $schema = [
         'name' => [
             'string',
             'info' => 'The property name',
+            'regexp' => '^\w*$',
         ],
         'value' => [
             'pjs',

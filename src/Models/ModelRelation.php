@@ -4,6 +4,7 @@ namespace Bfg\Wood\Models;
 
 use Bfg\Wood\ModelTopic;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 /**
  * Bfg\Wood\Models\ModelRelation
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property string $name
  * @property string $type
+ * @property string $relation_class
  * @property string|null $able
  * @property string $foreign
  * @property bool $with
@@ -52,14 +54,29 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class ModelRelation extends ModelTopic
 {
-    public string $icon = 'fas fa-network-wired';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-network-wired';
 
-    public ?string $name = 'Model relations';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Model relations';
 
-    public ?string $description = 'The model relations';
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The model relations';
 
+    /**
+     * @var string|null
+     */
     public ?string $parent = Model::class;
 
+    /**
+     * @var array
+     */
     public static array $schema = [
         'name' => [
             'string',
@@ -125,6 +142,7 @@ class ModelRelation extends ModelTopic
         ],
         'reverse_name' => [
             'string',
+            'regexp' => '^\w*$',
             'info' => 'Reverse related relation name',
         ],
         'reverse_type' => [
@@ -147,8 +165,30 @@ class ModelRelation extends ModelTopic
         ],
     ];
 
+    /**
+     * @return HasOne
+     */
     public function related_model(): HasOne
     {
         return $this->hasOne(Model::class, 'id', 'related_model_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getForeignAttribute(): string
+    {
+        return Str::snake(Str::singular($this->name)) . '_id';
+    }
+
+    /**
+     * @return string
+     */
+    public function getRelationClassAttribute(): string
+    {
+        return config(
+            "wood.relation_types.{$this->type}.class",
+            HasOne::class
+        );
     }
 }

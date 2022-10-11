@@ -26,15 +26,28 @@ use Bfg\Wood\ModelTopic;
  */
 class Config extends ModelTopic
 {
-    public ?string $name = "Configs";
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = "Configs";
 
-    public string $icon = "fas fa-cog";
+    /**
+     * @var string
+     */
+    public string $modelIcon = "fas fa-cog";
 
-    public ?string $description = "Project wood config";
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = "Project wood config";
 
+    /**
+     * @var array
+     */
     public static array $schema = [
         'name' => [
             'string',
+            'regexp' => '^\w*$',
             'info' => 'The name of config',
         ],
         'value' => [
@@ -43,11 +56,14 @@ class Config extends ModelTopic
         ],
     ];
 
+    /**
+     * @return array[]
+     */
     public static function seeds(): array
     {
         return [
             [
-                'name' => 'date',
+                'name' => 'migration_prepend',
                 'value' => date('Y_m_d')
             ]
         ];

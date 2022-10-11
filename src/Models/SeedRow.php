@@ -26,12 +26,24 @@ use Bfg\Wood\ModelTopic;
  */
 class SeedRow extends ModelTopic
 {
-    public string $icon = 'fas fa-grip-lines';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-grip-lines';
 
-    public ?string $name = 'Seed rows';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Seed rows';
 
-    public ?string $description = 'The rows of seeder';
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The rows of seeder';
 
+    /**
+     * @var string|null
+     */
     public ?string $parent = Seed::class;
 
     /**

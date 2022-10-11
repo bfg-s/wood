@@ -14,22 +14,26 @@ use ReflectionException;
  * @property string $file
  * @property int $inode
  * @property string $name
- * @property array|null $methods
  * @method static \Illuminate\Database\Eloquent\Builder|Php newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Php newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Php query()
  * @method static \Illuminate\Database\Eloquent\Builder|Php whereFile($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Php whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Php whereInode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Php whereMethods($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Php whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Php whereType($value)
  * @mixin \Eloquent
  */
 class Php extends ModelTopic
 {
+    /**
+     * @var string
+     */
     protected $table = 'php';
 
+    /**
+     * @var string[]
+     */
     protected $fillable = [
         'type',
         'file',
@@ -38,6 +42,9 @@ class Php extends ModelTopic
         'methods',
     ];
 
+    /**
+     * @var string[]
+     */
     protected $casts = [
         'type' => 'string',
         'file' => 'string',
@@ -46,25 +53,27 @@ class Php extends ModelTopic
         'methods' => 'array',
     ];
 
+    /**
+     * @var bool
+     */
     public $timestamps = false;
 
     /**
-     * @param  string  $class
+     * @param  array  $data
      * @return void
      */
     public static function createOrUpdatePhp(
-        string $class
+        array $data
     ): void {
         try {
-            $ref = new ReflectionClass($class);
+            $ref = new ReflectionClass($data['class']);
             if ($ref->getFileName()) {
                 static::updateOrCreate([
-                    'name' => $class,
+                    'inode' => $data['inode'],
                 ], [
                     'type' => $ref->isInterface() ? 'interface' : ($ref->isTrait() ? 'trait' : 'class'),
                     'file' => str_replace(base_path(), '', $ref->getFileName()),
-                    'inode' => fileinode($ref->getFileName()),
-                    'methods' => get_class_methods($class)
+                    'name' => $data['class'],
                 ]);
             }
         } catch (\Throwable $t) {

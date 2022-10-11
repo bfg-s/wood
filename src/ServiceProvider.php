@@ -3,6 +3,7 @@
 namespace Bfg\Wood;
 
 use Bfg\Wood\Commands\WoodInstallCommand;
+use Bfg\Wood\Commands\WoodRunCommand;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
@@ -45,8 +46,13 @@ class ServiceProvider extends IlluminateServiceProvider
         ], 'database.connections.'));
 
         $this->commands([
-            WoodInstallCommand::class
+            WoodInstallCommand::class,
+            WoodRunCommand::class,
         ]);
+
+        $this->app->singleton(ClassFactory::class, function () {
+            return new ClassFactory();
+        });
     }
 }
 

@@ -2,14 +2,15 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Wood\Generators\ResourceGenerator;
 use Bfg\Wood\ModelTopic;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Bfg\Wood\Models\Resource
  *
  * @property int $id
- * @property mixed|null $class
+ * @property ClassSubject $class
  * @property int $order
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -25,11 +26,25 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Resource extends ModelTopic
 {
-    public string $icon = 'fas fa-poll-h';
+    /**
+     * @var string|null
+     */
+    protected static ?string $generator = ResourceGenerator::class;
 
-    public ?string $name = 'Resources';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-poll-h';
 
-    public ?string $description = 'The laravel resources';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Resources';
+
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'The laravel resources';
 
     /**
      * @var array

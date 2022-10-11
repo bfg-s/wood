@@ -19,7 +19,15 @@ abstract class ModelTopic extends Model
      */
     protected $connection = 'wood';
 
+    /**
+     * @var array
+     */
     protected static array $iteration = [];
+
+    /**
+     * @var string|null
+     */
+    protected static ?string $generator = null;
 
     /**
      * @var array
@@ -39,17 +47,17 @@ abstract class ModelTopic extends Model
     /**
      * @var string|null
      */
-    public ?string $name = null;
+    public ?string $modelName = null;
 
     /**
      * @var string|null
      */
-    public ?string $description = null;
+    public ?string $modelDescription = null;
 
     /**
      * @var string
      */
-    public string $icon = 'fas fa-folder';
+    public string $modelIcon = 'fas fa-folder';
 
     /**
      * @var array
@@ -252,5 +260,22 @@ abstract class ModelTopic extends Model
     public static function seeds(): array
     {
         return [];
+    }
+
+    /**
+     * @return string|null
+     */
+    public static function getGenerator(): ?string
+    {
+        return static::$generator;
+    }
+
+    /**
+     * @param  string  $class
+     * @return void
+     */
+    public static function setGenerator(string $class): void
+    {
+        static::$generator = $class;
     }
 }

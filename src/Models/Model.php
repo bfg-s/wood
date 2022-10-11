@@ -2,18 +2,21 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Wood\Generators\ModelGenerator;
 use Bfg\Wood\ModelTopic;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 /**
  * Bfg\Wood\Models\Model
  *
  * @property int $id
- * @property mixed|null $class
+ * @property ClassSubject $class
  * @property bool $auth
  * @property bool $increment
+ * @property string $table
  * @property string $foreign
  * @property bool $created
  * @property bool $updated
@@ -55,11 +58,25 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  */
 class Model extends ModelTopic
 {
-    public ?string $name = 'Models';
+    /**
+     * @var string|null
+     */
+    protected static ?string $generator = ModelGenerator::class;
 
-    public string $icon = 'fas fa-cube';
+    /**
+     * @var string|null
+     */
+    public ?string $modelName = 'Models';
 
-    public ?string $description = 'Database models of laravel';
+    /**
+     * @var string
+     */
+    public string $modelIcon = 'fas fa-cube';
+
+    /**
+     * @var string|null
+     */
+    public ?string $modelDescription = 'Database models of laravel';
 
     /**
      * @var array
@@ -137,38 +154,69 @@ class Model extends ModelTopic
         ],
     ];
 
+    /**
+     * @return HasMany
+     */
     public function implements(): HasMany
     {
         return $this->hasMany(ModelImplement::class);
     }
 
+    /**
+     * @return HasMany
+     */
     public function traits(): HasMany
     {
         return $this->hasMany(ModelTrait::class);
     }
 
+    /**
+     * @return HasMany
+     */
     public function fields(): HasMany
     {
         return $this->hasMany(ModelField::class);
     }
 
+    /**
+     * @return HasMany
+     */
     public function constants(): HasMany
     {
         return $this->hasMany(ModelConstant::class);
     }
 
+    /**
+     * @return HasMany
+     */
     public function relations(): HasMany
     {
         return $this->hasMany(ModelRelation::class);
     }
 
+    /**
+     * @return HasMany
+     */
     public function properties(): HasMany
     {
         return $this->hasMany(ModelProperty::class);
     }
 
+    /**
+     * @return HasMany
+     */
     public function factory_lines(): HasMany
     {
         return $this->hasMany(ModelFactoryLine::class);
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableAttribute(): string
+    {
+        return strtolower(Str::snake(Str::singular(
+            class_basename($this->class->class)
+        )));
     }
 }

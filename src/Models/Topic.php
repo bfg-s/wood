@@ -36,6 +36,9 @@ use Bfg\Wood\ModelTopic;
  */
 class Topic extends ModelTopic
 {
+    /**
+     * @var string[]
+     */
     protected $fillable = [
         'icon',
         'name',
@@ -47,6 +50,9 @@ class Topic extends ModelTopic
         'schema',
     ];
 
+    /**
+     * @var string[]
+     */
     protected $casts = [
         'icon' => 'string',
         'name' => 'string',
@@ -72,9 +78,9 @@ class Topic extends ModelTopic
             'table' => $topic->getTable(),
             'topic' => $topic::class,
             'parent_topic' => $topic->parent,
-            'name' => $topic->name ?: class_basename($topic),
-            'description' => $topic->description,
-            'icon' => $topic->icon,
+            'name' => $topic->modelName ?: class_basename($topic),
+            'description' => $topic->modelDescription,
+            'icon' => $topic->modelIcon,
             'schema' => $topic::$schema,
             'settings' => [],
         ];
