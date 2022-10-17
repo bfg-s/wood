@@ -23,7 +23,7 @@ class InterfaceCast implements CastsAttributes
     public function get($model, string $key, $value, array $attributes): InterfaceSubject
     {
         return app(ClassFactory::class)
-            ->interface($value);
+            ->interface($value, $model);
     }
 
     /**

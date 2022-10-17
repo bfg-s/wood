@@ -55,6 +55,8 @@ abstract class BaseWoodCommand extends Command
                 $table->string('file');
                 $table->bigInteger('inode');
                 $table->string('name');
+                $table->morphs('topic');
+                $table->integer('processed')->default(0);
             });
 
             $this->info('PHP table, created!');
@@ -62,12 +64,24 @@ abstract class BaseWoodCommand extends Command
             $notExists = true;
         }
 
-        if ($force || $notExists) {
+        if (!$this->connection->hasTable('php_subjects')) {
 
-            foreach ($this->getWorkFiles() as $file) {
-                Php::createOrUpdatePhp($file);
-            }
+            $this->connection->create('php_subjects', function (Blueprint $table) {
+                $table->id();
+                $table->enum('type', ['method', 'property']);
+                $table->foreignId('php_id')->constrained('php');
+                $table->string('name');
+                $table->integer('processed')->default(0);
+            });
+
         }
+
+//        if ($force || $notExists) {
+//
+//            foreach ($this->getWorkFiles() as $file) {
+//                Php::createOrUpdatePhp($file);
+//            }
+//        }
     }
 
     /**

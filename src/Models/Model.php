@@ -25,18 +25,16 @@ use Illuminate\Support\Str;
  * @property int $order
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelConstant[] $constants
- * @property-read int|null $constants_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelFactoryLine[] $factory_lines
  * @property-read int|null $factory_lines_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelField[] $fields
  * @property-read int|null $fields_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelImplement[] $implements
  * @property-read int|null $implements_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelProperty[] $properties
- * @property-read int|null $properties_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelRelation[] $relations
  * @property-read int|null $relations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelRelation[] $related
+ * @property-read int|null $related_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelTrait[] $traits
  * @property-read int|null $traits_count
  * @method static \Illuminate\Database\Eloquent\Builder|Model newModelQuery()
@@ -130,27 +128,21 @@ class Model extends ModelTopic
             'info' => 'The count of factory creating rows',
             'regexp' => '^\d*$',
         ],
-        'constants' => [
-            'info' => 'The constants for the model',
-        ],
         'fields' => [
-            'info' => 'The fields for the model',
+            'info' => 'Fields',
         ],
         'relations' => [
-            'info' => 'The relations for the model',
+            'info' => 'Relations',
         ],
         'traits' => [
             'default' => [['class' => HasFactory::class]],
-            'info' => 'The traits for the model',
+            'info' => 'Traits',
         ],
         'implements' => [
-            'info' => 'The interfaces for the model',
-        ],
-        'properties' => [
-            'info' => 'The properties for the model',
+            'info' => 'Implements',
         ],
         'factory_lines' => [
-            'info' => 'The lines of factory for the model',
+            'info' => 'Factory lines',
         ],
     ];
 
@@ -181,14 +173,6 @@ class Model extends ModelTopic
     /**
      * @return HasMany
      */
-    public function constants(): HasMany
-    {
-        return $this->hasMany(ModelConstant::class);
-    }
-
-    /**
-     * @return HasMany
-     */
     public function relations(): HasMany
     {
         return $this->hasMany(ModelRelation::class);
@@ -197,9 +181,9 @@ class Model extends ModelTopic
     /**
      * @return HasMany
      */
-    public function properties(): HasMany
+    public function related(): HasMany
     {
-        return $this->hasMany(ModelProperty::class);
+        return $this->hasMany(ModelRelation::class, 'related_model_id', 'id');
     }
 
     /**
@@ -214,6 +198,14 @@ class Model extends ModelTopic
      * @return string
      */
     public function getTableAttribute(): string
+    {
+        return $this->table();
+    }
+
+    /**
+     * @return string
+     */
+    public function table(): string
     {
         return strtolower(Str::snake(Str::singular(
             class_basename($this->class->class)

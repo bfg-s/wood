@@ -23,7 +23,7 @@ class ClassCast implements CastsAttributes
     public function get($model, string $key, $value, array $attributes): ClassSubject
     {
         return app(ClassFactory::class)
-            ->class($value);
+            ->class($value, $model);
     }
 
     /**

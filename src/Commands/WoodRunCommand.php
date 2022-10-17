@@ -27,7 +27,7 @@ class WoodRunCommand extends BaseWoodCommand
             ->generate()
             ->save(
                 fn (ClassSubject $subject)
-                => $this->info("Saved: " . $subject->fileSubject->file)
+                => $this->info("Saved: " . str_replace(base_path(), '', $subject->fileSubject->file))
             );
 
         $this->info('Finished!');

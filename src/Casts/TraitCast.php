@@ -23,7 +23,7 @@ class TraitCast implements CastsAttributes
     public function get($model, string $key, $value, array $attributes): TraitSubject
     {
         return app(ClassFactory::class)
-            ->trait($value);
+            ->trait($value, $model);
     }
 
     /**

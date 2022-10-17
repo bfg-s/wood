@@ -23,7 +23,7 @@ class AnonymousClassCast implements CastsAttributes
     public function get($model, string $key, $value, array $attributes): AnonymousClassSubject
     {
         return app(ClassFactory::class)
-            ->anonymousClass($value);
+            ->anonymousClass($value, $model);
     }
 
     /**

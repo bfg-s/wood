@@ -2,7 +2,11 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Comcode\Subjects\InterfaceSubject;
+use Bfg\Comcode\Subjects\TraitSubject;
 use Bfg\Wood\ModelTopic;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use ReflectionClass;
 use ReflectionException;
 
@@ -39,7 +43,9 @@ class Php extends ModelTopic
         'file',
         'inode',
         'name',
-        'methods',
+        'processed',
+        'topic_type',
+        'topic_id',
     ];
 
     /**
@@ -50,7 +56,9 @@ class Php extends ModelTopic
         'file' => 'string',
         'inode' => 'int',
         'name' => 'string',
-        'methods' => 'array',
+        'processed' => 'int',
+        'topic_type' => 'string',
+        'topic_id' => 'int',
     ];
 
     /**
@@ -59,23 +67,46 @@ class Php extends ModelTopic
     public $timestamps = false;
 
     /**
-     * @param  array  $data
+     * @return HasMany
+     */
+    public function subjects(): HasMany
+    {
+        return $this->hasMany(PhpSubject::class, 'php_id', 'id');
+    }
+
+    /**
+     * @param  ModelTopic  $modelTopic
+     * @return Php|null
+     */
+    public static function findByTopic(ModelTopic $modelTopic): Php|null
+    {
+        return static::where('topic_type', get_class($modelTopic))
+            ->where('topic_id', $modelTopic->id)->first();
+    }
+
+    /**
+     * @param  ClassSubject  $subject
      * @return void
      */
     public static function createOrUpdatePhp(
-        array $data
+        ClassSubject $subject
     ): void {
         try {
-            $ref = new ReflectionClass($data['class']);
-            if ($ref->getFileName()) {
-                static::updateOrCreate([
-                    'inode' => $data['inode'],
-                ], [
-                    'type' => $ref->isInterface() ? 'interface' : ($ref->isTrait() ? 'trait' : 'class'),
-                    'file' => str_replace(base_path(), '', $ref->getFileName()),
-                    'name' => $data['class'],
-                ]);
-            }
+
+            $type = $subject instanceof InterfaceSubject ? 'interface'
+                : ($subject instanceof TraitSubject ? 'trait' : 'class');
+
+            $result = static::updateOrCreate([
+                'inode' => fileinode($subject->fileSubject->file),
+            ], [
+                'type' => $type,
+                'file' => str_replace(base_path(), '', $subject->fileSubject->file),
+                'name' => $subject->class,
+                'topic_id' => $subject->modelTopic->id,
+                'topic_type' => get_class($subject->modelTopic),
+            ]);
+
+            $result->increment('processed');
         } catch (\Throwable $t) {
             return;
         }

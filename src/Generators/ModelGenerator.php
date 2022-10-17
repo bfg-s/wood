@@ -9,6 +9,7 @@ use Bfg\Wood\Generators\ModelGenerator\ModelRelationGenerator;
 use Bfg\Wood\Models\Model;
 use Bfg\Wood\Models\ModelField;
 use Bfg\Wood\Models\ModelImplement;
+use Bfg\Wood\Models\ModelRelation;
 use Bfg\Wood\Models\ModelTrait;
 use Bfg\Wood\Models\Topic;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -145,16 +146,6 @@ class ModelGenerator extends GeneratorAbstract
                 }
             }
         }
-
-        foreach ($this->constants()->get() as $constant) {
-            if ($this->class->notExistsConst($constant->name)) {
-                $this->class->const(
-                    $constant->modifier ?? 'public',
-                    $constant->name,
-                    $constant->value
-                );
-            }
-        }
     }
 
     /**
@@ -205,6 +196,10 @@ class ModelGenerator extends GeneratorAbstract
             ->where('hidden', false)
             ->pluck('name');
 
+        $foreigns = $this->related()->get()->pluck('foreign');
+
+        $names = $names->merge($foreigns);
+
         if ($names->isNotEmpty()) {
             $this->class->protectedProperty(
                 'fillable', $names->toArray()
@@ -212,8 +207,6 @@ class ModelGenerator extends GeneratorAbstract
                 fn(DocSubject $doc) => $doc->name('The attributes that are mass assignable.')
                     ->tagVar('array<int, string>')
             );
-        } else {
-            $this->class->forgetProperty('fillable');
         }
     }
 
@@ -233,8 +226,6 @@ class ModelGenerator extends GeneratorAbstract
                 fn(DocSubject $doc) => $doc->name('The attributes that should be hidden for serialization.')
                     ->tagVar('array<int, string>')
             );
-        } else {
-            $this->class->forgetProperty('hidden');
         }
     }
 
@@ -243,19 +234,22 @@ class ModelGenerator extends GeneratorAbstract
      */
     protected function casts(): void
     {
-        $this->class->protectedProperty(
-            'casts',
-            $this->fields()
-                ->where('cast', '!=', 'string')
-                ->get()
-                ->mapWithKeys(
-                    fn(ModelField $field) => [$field->name => $field->cast]
-                )
-                ->toArray()
-        )->comment(
-            fn(DocSubject $doc) => $doc->name('The attributes that should be cast.')
-                ->tagVar('array<string, string>')
-        );
+        $casts = $this->fields()
+            ->where('cast', '!=', 'string')
+            ->get()
+            ->mapWithKeys(
+                fn(ModelField $field) => [$field->name => $field->cast]
+            );
+
+        if ($casts->isNotEmpty()) {
+
+            $this->class->protectedProperty(
+                'casts', $casts->toArray()
+            )->comment(
+                fn(DocSubject $doc) => $doc->name('The attributes that should be cast.')
+                    ->tagVar('array<string, string>')
+            );
+        }
     }
 
     /**
@@ -274,8 +268,6 @@ class ModelGenerator extends GeneratorAbstract
                 fn(DocSubject $doc) => $doc->name('The relations to eager load on every query.')
                     ->tagVar('array<int, string>')
             );
-        } else {
-            $this->class->forgetProperty('with');
         }
     }
 
@@ -294,22 +286,6 @@ class ModelGenerator extends GeneratorAbstract
             )->comment(
                 fn(DocSubject $doc) => $doc->name('The relationship counts that should be eager loaded on every query.')
                     ->tagVar('array<int, string>')
-            );
-        } else {
-            $this->class->forgetProperty('withCount');
-        }
-    }
-
-    /**
-     * @return void
-     */
-    protected function property(): void
-    {
-        foreach ($this->properties()->get() as $property) {
-            $this->class->property(
-                $property->modifier ?? 'public',
-                $property->name,
-                $property->value
             );
         }
     }

@@ -101,10 +101,9 @@ class ModelRelation extends ModelTopic
             ],
             'info' => 'The relation type',
         ],
-        'able' => [
-            'string',
-            'nullable' => true,
-            'info' => 'Able name for morph relations',
+        'related_model' => [
+            'select' => 'class', // select - modifier, class - field name for selection
+            'info' => 'Related relation model',
         ],
         'with' => [
             'bool',
@@ -136,19 +135,19 @@ class ModelRelation extends ModelTopic
             'default' => false,
             'info' => 'Is set null on delete',
         ],
-        'related_model' => [
-            'select' => 'class', // select - modifier, class - field name for selection
-            'info' => 'Related relation model',
-        ],
         'reverse_name' => [
             'string',
+            'default' => '',
+            'nullable' => true,
             'regexp' => '^\w*$',
             'info' => 'Reverse related relation name',
         ],
         'reverse_type' => [
             'string',
-            'default' => 'hasOne',
+            'default' => '',
+            'nullable' => true,
             'possible' => [
+                '',
                 'hasMany',
                 'hasManyThrough',
                 'hasOneThrough',
@@ -163,6 +162,11 @@ class ModelRelation extends ModelTopic
             ],
             'info' => 'Reverse related relation type',
         ],
+        'able' => [
+            'string',
+            'nullable' => true,
+            'info' => 'Able name for morph relations',
+        ],
     ];
 
     /**
@@ -174,11 +178,19 @@ class ModelRelation extends ModelTopic
     }
 
     /**
+     * @return HasOne
+     */
+    public function model(): HasOne
+    {
+        return $this->hasOne(Model::class, 'id', 'model_id');
+    }
+
+    /**
      * @return string
      */
     public function getForeignAttribute(): string
     {
-        return Str::snake(Str::singular($this->name)) . '_id';
+        return Str::snake(Str::singular($this->model()->first()->table())) . '_id';
     }
 
     /**
@@ -190,5 +202,37 @@ class ModelRelation extends ModelTopic
             "wood.relation_types.{$this->type}.class",
             HasOne::class
         );
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public function getNameAttribute($value): string
+    {
+        if ($this->type) {
+
+            $cfg = config("wood.relation_types." . $this->type);
+            return call_user_func([Str::class, $cfg['declinations']], $value);
+        }
+        return $value;
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public function getReverseNameAttribute($value): string
+    {
+        $value = $value ?: $this->related_model()->first()->getTableAttribute();
+
+        if ($this->type) {
+
+            $reverse_type = $this->reverse_type ?: config("wood.relation_types." . $this->type . ".reverses");
+            $cfg = config("wood.relation_types." . $reverse_type);
+            return call_user_func([Str::class, $cfg['declinations']], $value);
+        }
+
+        return $value;
     }
 }
