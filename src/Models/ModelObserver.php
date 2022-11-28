@@ -3,9 +3,8 @@
 namespace Bfg\Wood\Models;
 
 use Bfg\Comcode\Subjects\ClassSubject;
-use Bfg\Wood\Generators\ObserverGenerator;
+use Bfg\Wood\Generators\ModelGenerator\ModelObserverGenerator;
 use Bfg\Wood\ModelTopic;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Bfg\Wood\Models\Observer
@@ -18,24 +17,24 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Bfg\Wood\Models\Model|null $model
- * @method static \Illuminate\Database\Eloquent\Builder|Observer newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Observer newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Observer query()
- * @method static \Illuminate\Database\Eloquent\Builder|Observer whereClass($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Observer whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Observer whereEvents($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Observer whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Observer whereModelId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Observer whereOrder($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Observer whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver whereClass($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver whereEvents($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver whereModelId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ModelObserver whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class Observer extends ModelTopic
+class ModelObserver extends ModelTopic
 {
     /**
      * @var string|null
      */
-    protected static ?string $generator = ObserverGenerator::class;
+    protected static ?string $generator = ModelObserverGenerator::class;
 
     /**
      * @var string
@@ -53,6 +52,11 @@ class Observer extends ModelTopic
     public ?string $modelDescription = 'The model observers';
 
     /**
+     * @var string|null
+     */
+    public ?string $parent = Model::class;
+
+    /**
      * @var array
      */
     public static array $schema = [
@@ -61,9 +65,6 @@ class Observer extends ModelTopic
             'prepend' => "App\\Observers\\",
             'regexp' => '^([A-Z]\w*\\\\?)+(?<!\\\\)$',
             'info' => 'Observer class name',
-        ],
-        'model' => [
-            'select' => 'class'
         ],
         'events' => [
             'array',
@@ -85,12 +86,4 @@ class Observer extends ModelTopic
             'info' => 'Event list',
         ],
     ];
-
-    /**
-     * @return HasOne
-     */
-    public function model(): HasOne
-    {
-        return $this->hasOne(Model::class, 'id', 'model_id');
-    }
 }

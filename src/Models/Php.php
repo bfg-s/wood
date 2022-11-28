@@ -2,6 +2,7 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\AnonymousClassSubject;
 use Bfg\Comcode\Subjects\ClassSubject;
 use Bfg\Comcode\Subjects\InterfaceSubject;
 use Bfg\Comcode\Subjects\TraitSubject;
@@ -76,12 +77,13 @@ class Php extends ModelTopic
 
     /**
      * @param  ModelTopic  $modelTopic
+     * @param  string  $type
      * @return Php|null
      */
-    public static function findByTopic(ModelTopic $modelTopic): Php|null
+    public static function findByTopic(ModelTopic $modelTopic, string $type): Php|null
     {
         return static::where('topic_type', get_class($modelTopic))
-            ->where('topic_id', $modelTopic->id)->first();
+            ->where('topic_id', $modelTopic->id)->where('type', $type)->first();
     }
 
     /**
@@ -94,19 +96,30 @@ class Php extends ModelTopic
         try {
 
             $type = $subject instanceof InterfaceSubject ? 'interface'
-                : ($subject instanceof TraitSubject ? 'trait' : 'class');
+                : ($subject instanceof TraitSubject ? 'trait' : ($subject instanceof AnonymousClassSubject ? 'anonymous': 'class'));
 
-            $result = static::updateOrCreate([
+            $file = str_replace(base_path(), '', $subject->fileSubject->file);
+
+            $result = static::where('file', $file)->first();
+
+            $data = [
                 'inode' => fileinode($subject->fileSubject->file),
-            ], [
                 'type' => $type,
-                'file' => str_replace(base_path(), '', $subject->fileSubject->file),
                 'name' => $subject->class,
                 'topic_id' => $subject->modelTopic->id,
                 'topic_type' => get_class($subject->modelTopic),
-            ]);
+            ];
 
-            $result->increment('processed');
+            if (! $result) {
+
+                $data['file'] = $file;
+                $data['processed'] = 0;
+
+                Php::create($data);
+            } else {
+                $result->update($data);
+                $result->increment('processed');
+            }
         } catch (\Throwable $t) {
             return;
         }

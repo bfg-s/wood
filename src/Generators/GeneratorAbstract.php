@@ -46,6 +46,7 @@ abstract class GeneratorAbstract
                     !str_starts_with($stackName, '__')
                     && $stackName !== 'finish'
                     && $stackName !== 'collection'
+                    && $stackName !== 'afterSave'
                 ) {
                     call_user_func([$this, $stackName], $item);
                 }
@@ -75,6 +76,22 @@ abstract class GeneratorAbstract
     protected function finish(): void
     {
 
+    }
+
+    /**
+     * @return void
+     */
+    public function afterSave(): void
+    {
+        if (method_exists($this, '__afterSave')) {
+            foreach ($this->collection() as $item) {
+                $this->current = $item;
+                $this->__afterSave($item);
+            }
+        }
+        if (method_exists($this, '__saved')) {
+            $this->__saved();
+        }
     }
 
     /**

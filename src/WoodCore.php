@@ -4,7 +4,8 @@ namespace Bfg\Wood;
 
 use Bfg\Wood\Models\Config;
 use Bfg\Wood\Models\Model;
-use Bfg\Wood\Models\Observer;
+use Bfg\Wood\Models\Factory;
+use Bfg\Wood\Models\ModelObserver;
 use Bfg\Wood\Models\Request;
 use Bfg\Wood\Models\Resource;
 use Bfg\Wood\Models\Seed;
@@ -16,12 +17,13 @@ class WoodCore
      * @var array|string[]
      */
     protected array $topics = [
-        'config' => Config::class,
         'model' => Model::class,
+        'factory' => Factory::class,
         'seed' => Seed::class,
-        'observer' => Observer::class,
+        'observer' => ModelObserver::class,
         'request' => Request::class,
         'resource' => Resource::class,
+        'config' => Config::class,
     ];
 
     /**

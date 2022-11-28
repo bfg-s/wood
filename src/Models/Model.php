@@ -2,7 +2,9 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\AnonymousClassSubject;
 use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Wood\Casts\AnonymousClassCast;
 use Bfg\Wood\Generators\ModelGenerator;
 use Bfg\Wood\ModelTopic;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,10 +16,13 @@ use Illuminate\Support\Str;
  *
  * @property int $id
  * @property ClassSubject $class
+ * @property AnonymousClassSubject $migration_class
  * @property bool $auth
+ * @property bool $migration
  * @property bool $increment
  * @property string $table
  * @property string $foreign
+ * @property string $foreign_id
  * @property bool $created
  * @property bool $updated
  * @property bool $deleted
@@ -25,7 +30,7 @@ use Illuminate\Support\Str;
  * @property int $order
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelFactoryLine[] $factory_lines
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\FactoryLine[] $factory_lines
  * @property-read int|null $factory_lines_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelField[] $fields
  * @property-read int|null $fields_count
@@ -37,6 +42,8 @@ use Illuminate\Support\Str;
  * @property-read int|null $related_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelTrait[] $traits
  * @property-read int|null $traits_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Bfg\Wood\Models\ModelObserver[] $observers
+ * @property-read int|null $observers_count
  * @method static \Illuminate\Database\Eloquent\Builder|Model newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Model newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Model query()
@@ -87,6 +94,13 @@ class Model extends ModelTopic
             'regexp' => '^([A-Z]\w*\\\\?)+(?<!\\\\)$',
             'info' => 'Model class',
         ],
+        'foreign' => [
+            'string',
+            'default' => 'id',
+            'if_not' => 'increment',
+            'regexp' => '^\w*$',
+            'info' => 'The foreign field',
+        ],
         'auth' => [
             'bool',
             'default' => false,
@@ -96,13 +110,6 @@ class Model extends ModelTopic
             'bool',
             'default' => true,
             'info' => 'The increment',
-        ],
-        'foreign' => [
-            'string',
-            'default' => 'id',
-            'if_not' => 'increment',
-            'regexp' => '^\w*$',
-            'info' => 'The foreign field',
         ],
         'created' => [
             'bool',
@@ -122,17 +129,14 @@ class Model extends ModelTopic
             'default' => false,
             'info' => 'Use the SoftDelete and "deleted_at" field',
         ],
-        'factory_count' => [
-            'integer',
-            'default' => 0,
-            'info' => 'The count of factory creating rows',
-            'regexp' => '^\d*$',
-        ],
         'fields' => [
             'info' => 'Fields',
         ],
         'relations' => [
             'info' => 'Relations',
+        ],
+        'observers' => [
+            'info' => 'Observers',
         ],
         'traits' => [
             'default' => [['class' => HasFactory::class]],
@@ -141,8 +145,11 @@ class Model extends ModelTopic
         'implements' => [
             'info' => 'Implements',
         ],
-        'factory_lines' => [
-            'info' => 'Factory lines',
+        'migration' => [
+            'bool',
+            'name' => 'Migration',
+            'default' => true,
+            'info' => 'Automatically create migration',
         ],
     ];
 
@@ -181,17 +188,17 @@ class Model extends ModelTopic
     /**
      * @return HasMany
      */
-    public function related(): HasMany
+    public function observers(): HasMany
     {
-        return $this->hasMany(ModelRelation::class, 'related_model_id', 'id');
+        return $this->hasMany(ModelObserver::class);
     }
 
     /**
      * @return HasMany
      */
-    public function factory_lines(): HasMany
+    public function related(): HasMany
     {
-        return $this->hasMany(ModelFactoryLine::class);
+        return $this->hasMany(ModelRelation::class, 'related_model_id', 'id');
     }
 
     /**
@@ -200,6 +207,32 @@ class Model extends ModelTopic
     public function getTableAttribute(): string
     {
         return $this->table();
+    }
+
+    /**
+     * @return string
+     */
+    public function getForeignIdAttribute(): string
+    {
+        return Str::singular($this->table()) . '_id';
+    }
+
+    /**
+     * @return AnonymousClassSubject
+     */
+    public function getMigrationClassAttribute(): AnonymousClassSubject
+    {
+        $date = Config::where('name', 'migration_prepend')->first()?->value ?: '2022_02_22';
+        return (new AnonymousClassCast())->get(
+            $this,
+            'migration_class',
+            database_path(
+                "migrations/{$date}_"
+                .str_repeat('0', 6 - strlen($this->id))
+                .$this->id."_create_".$this->table()."_table.php"
+            ),
+            $this->attributes
+        );
     }
 
     /**

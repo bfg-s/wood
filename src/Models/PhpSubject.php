@@ -2,6 +2,9 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Nodes\ClassMethodNode;
+use Bfg\Comcode\Nodes\ClassPropertyNode;
+use Bfg\Comcode\Subjects\ClassSubject;
 use Bfg\Wood\ModelTopic;
 use ReflectionClass;
 use ReflectionException;
@@ -53,4 +56,45 @@ class PhpSubject extends ModelTopic
      * @var bool
      */
     public $timestamps = false;
+
+    static array $maxs = [
+        'method' => 0,
+        'property' => 0
+    ];
+
+    public static function createOrUpdateSubject(
+        ClassSubject $subject,
+        ClassMethodNode|ClassPropertyNode $node,
+        string $type,
+    ) {
+        /** @var null|Php $php */
+        $php = $subject->php;
+        if ($php) {
+
+            $subject = $php->subjects()
+                ->where('name', $node->getName())
+                ->first();
+
+            if (! $subject) {
+
+                if ($php->subjects()
+                    ->where('type', 'method')->count()) {
+                    $processed = $php->subjects()
+                            ->where('type', 'method')
+                            ->max('processed')+1;
+                    if (! static::$maxs[$type]) {
+                        static::$maxs[$type] = $processed;
+                    }
+                }
+
+                $php->subjects()->create([
+                    'name' => $node->getName(),
+                    'type' => $type,
+                    'processed' => static::$maxs[$type],
+                ]);
+            } else {
+                $subject->increment('processed');
+            }
+        }
+    }
 }

@@ -71,6 +71,8 @@ class WoodInstallCommand extends BaseWoodCommand
                 $table->json('settings');
                 $table->json('schema');
                 $table->timestamps();
+
+                $table->foreignId()->constrained()->nullOnDelete();
             });
 
             $this->info('Topics table, created!');

@@ -2,9 +2,19 @@
 
 namespace Bfg\Wood\Generators;
 
+use Bfg\Comcode\Comcode;
+use Bfg\Comcode\Subjects\DocSubject;
+use Bfg\Wood\ClassFactory;
+use Bfg\Wood\Models\Seed;
 use Bfg\Wood\Models\Topic;
+use Database\Seeders\DatabaseSeeder;
+use ErrorException;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
 
+/**
+ * @mixin Seed
+ */
 class SeedGenerator extends GeneratorAbstract
 {
     /**
@@ -13,16 +23,52 @@ class SeedGenerator extends GeneratorAbstract
      */
     protected function collection(): Collection|array
     {
-        return [];
+        return Seed::all();
+    }
+
+    protected function basic()
+    {
+        $this->class->extends(Seeder::class);
+    }
+
+    protected function run()
+    {
+        $method = $this->class->publicMethod('run')
+            ->clear();
+
+        $method->comment(function (DocSubject $subject) {
+            $subject->name('Run the database seeds.');
+            $subject->tagReturn('void');
+        });
+
+        foreach ($this->rows as $row) {
+
+            $method->line()->staticCall(
+                Comcode::useIfClass($this->model->class->class, $this->class),
+                'create',
+                $row->row
+            );
+        }
     }
 
     /**
-     * Handle generator process
-     * @param  Topic  $topic
-     * @return void
+     * @throws ErrorException
      */
-    protected function handle(Topic $topic): void
+    protected function finish(): void
     {
-        // TODO: Implement handle() method.
+        $class = app(ClassFactory::class)->class(
+            DatabaseSeeder::class
+        );
+
+        foreach (Seed::all() as $item) {
+
+            $class->publicMethod('run')
+                ->row($item->class->class)
+                ->var('this')
+                ->call(
+                    Comcode::useIfClass($item->class->class, $class) . '::class'
+                );
+        }
+
     }
 }

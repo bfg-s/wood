@@ -14,24 +14,24 @@ use Bfg\Wood\ModelTopic;
  * @property int $model_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine query()
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine whereField($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine whereModelId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine whereOrder($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine wherePhp($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ModelFactoryLine whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine query()
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine whereField($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine whereModelId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine wherePhp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FactoryLine whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class ModelFactoryLine extends ModelTopic
+class FactoryLine extends ModelTopic
 {
     /**
      * @var string
      */
-    public string $modelIcon = 'fas fa-industry';
+    public string $modelIcon = 'fas fa-grip-lines';
 
     /**
      * @var string|null
@@ -46,7 +46,7 @@ class ModelFactoryLine extends ModelTopic
     /**
      * @var string|null
      */
-    public ?string $parent = Model::class;
+    public ?string $parent = Factory::class;
 
     /**
      * @var array

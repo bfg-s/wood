@@ -53,7 +53,8 @@ class ModelTrait extends ModelTopic
     public static array $schema = [
         'class' => [
             'trait',
-            'regexp' => '^([A-Z]\w*\\\\?)+(?<!\\\\)$',
+            'regexp' => '^[A-z]+$',
+            'prepend' => "App\\Traits\\",
             'info' => 'The model trait name',
         ],
     ];

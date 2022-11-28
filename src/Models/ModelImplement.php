@@ -53,6 +53,7 @@ class ModelImplement extends ModelTopic
     public static array $schema = [
         'class' => [
             'interface',
+            'prepend' => "App\\Interfaces\\",
             'regexp' => '^([A-Z]\w*\\\\?)+(?<!\\\\)$',
             'info' => 'Interface name for model',
         ],

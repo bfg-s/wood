@@ -45,13 +45,11 @@ abstract class BaseWoodCommand extends Command
      */
     protected function freshPhpTable(bool $force = false): void
     {
-        $notExists = false;
-
         if (!$this->connection->hasTable('php')) {
 
             $this->connection->create('php', function (Blueprint $table) {
                 $table->id();
-                $table->enum('type', ['class', 'interface', 'trait']);
+                $table->enum('type', ['class', 'anonymous', 'interface', 'trait']);
                 $table->string('file');
                 $table->bigInteger('inode');
                 $table->string('name');
@@ -60,8 +58,6 @@ abstract class BaseWoodCommand extends Command
             });
 
             $this->info('PHP table, created!');
-
-            $notExists = true;
         }
 
         if (!$this->connection->hasTable('php_subjects')) {
@@ -74,14 +70,8 @@ abstract class BaseWoodCommand extends Command
                 $table->integer('processed')->default(0);
             });
 
+            $this->info('PHP subject table, created!');
         }
-
-//        if ($force || $notExists) {
-//
-//            foreach ($this->getWorkFiles() as $file) {
-//                Php::createOrUpdatePhp($file);
-//            }
-//        }
     }
 
     /**

@@ -22,13 +22,15 @@ class PJsCast implements CastsAttributes
             ? 'this.' . $value
             : $value;
 
-        return $value ? preg_replace(
+        $value = $value ? preg_replace(
             '/([A-z\d)])[.?]([A-z\d])/',
             '$1->$2',
             ! preg_match('/^[A-z\d]+\(/', $value)
                 ? '$' . $value
                 : $value
         ) : null;
+
+        return $value ? trim($value, " \t\n\r\0\x0B;") : null;
     }
 
     /**

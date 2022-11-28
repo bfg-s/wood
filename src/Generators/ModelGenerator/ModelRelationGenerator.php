@@ -10,7 +10,6 @@ use Bfg\Wood\Generators\ModelGenerator;
 use Bfg\Wood\Models\Model;
 use Bfg\Wood\Models\ModelRelation;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 use PhpParser\Node\Expr;
 
 /**
@@ -57,6 +56,30 @@ class ModelRelationGenerator extends GeneratorAbstract
                 );
             }
         }
+    }
+
+    protected function __belongsToMany(ModelRelation $relation)
+    {
+        $related = $relation->related_model()->first();
+        $this->__relation_method(
+            $relation,
+            $this->__makeRealClass($related->class->class),
+            $this->table() . '_' . $relation->name,
+            $related->foreign_id,
+            $this->foreign_id,
+        );
+    }
+
+    protected function __related_belongsToMany(ModelRelation $relation)
+    {
+        $related = $relation->related_model()->first();
+        $this->__relation_method(
+            $relation,
+            $this->__makeRealClass($relation->model->class->class),
+            $this->table() . '_' . $relation->name,
+            $this->foreign_id,
+            $related->foreign_id,
+        );
     }
 
     protected function __related_method(

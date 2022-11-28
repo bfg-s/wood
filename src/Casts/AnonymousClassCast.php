@@ -18,7 +18,6 @@ class AnonymousClassCast implements CastsAttributes
      * @param  mixed  $value
      * @param  array  $attributes
      * @return AnonymousClassSubject
-     * @throws ErrorException
      */
     public function get($model, string $key, $value, array $attributes): AnonymousClassSubject
     {

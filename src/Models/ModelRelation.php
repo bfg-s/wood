@@ -29,6 +29,7 @@ use Illuminate\Support\Str;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Bfg\Wood\Models\Model|null $related_model
+ * @property-read \Bfg\Wood\Models\Model|null $model
  * @method static \Illuminate\Database\Eloquent\Builder|ModelRelation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ModelRelation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ModelRelation query()
@@ -105,36 +106,6 @@ class ModelRelation extends ModelTopic
             'select' => 'class', // select - modifier, class - field name for selection
             'info' => 'Related relation model',
         ],
-        'with' => [
-            'bool',
-            'default' => false,
-            'info' => 'Always load with this relation',
-        ],
-        'with_count' => [
-            'bool',
-            'default' => false,
-            'info' => 'Always load with count of this relation rows',
-        ],
-        'nullable' => [
-            'bool',
-            'default' => false,
-            'info' => 'Is nullable relation',
-        ],
-        'cascade_on_update' => [
-            'bool',
-            'default' => true,
-            'info' => 'Is cascade on update',
-        ],
-        'cascade_on_delete' => [
-            'bool',
-            'default' => true,
-            'info' => 'Is cascade on delete',
-        ],
-        'null_on_delete' => [
-            'bool',
-            'default' => false,
-            'info' => 'Is set null on delete',
-        ],
         'reverse_name' => [
             'string',
             'default' => '',
@@ -166,6 +137,36 @@ class ModelRelation extends ModelTopic
             'string',
             'nullable' => true,
             'info' => 'Able name for morph relations',
+        ],
+        'with' => [
+            'bool',
+            'default' => false,
+            'info' => 'Always load with this relation',
+        ],
+        'with_count' => [
+            'bool',
+            'default' => false,
+            'info' => 'Always load with count of this relation rows',
+        ],
+        'nullable' => [
+            'bool',
+            'default' => false,
+            'info' => 'Is nullable relation',
+        ],
+        'cascade_on_update' => [
+            'bool',
+            'default' => true,
+            'info' => 'Is cascade on update',
+        ],
+        'cascade_on_delete' => [
+            'bool',
+            'default' => true,
+            'info' => 'Is cascade on delete',
+        ],
+        'null_on_delete' => [
+            'bool',
+            'default' => false,
+            'info' => 'Is set null on delete',
         ],
     ];
 
@@ -224,7 +225,7 @@ class ModelRelation extends ModelTopic
      */
     public function getReverseNameAttribute($value): string
     {
-        $value = $value ?: $this->related_model()->first()->getTableAttribute();
+        $value = $value ?: $this->model()->first()->getTableAttribute();
 
         if ($this->type) {
 

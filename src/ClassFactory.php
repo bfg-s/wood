@@ -11,6 +11,7 @@ use Bfg\Comcode\Subjects\TraitSubject;
 use Bfg\Wood\Models\Php;
 use Bfg\Wood\Models\PhpSubject;
 use ErrorException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class ClassFactory
 {
@@ -19,8 +20,7 @@ class ClassFactory
      */
     protected array $classes = [];
 
-    static int $maxMethod = 0;
-    static int $maxProperty = 0;
+    protected array $generatorInstances = [];
 
     public function __construct()
     {
@@ -37,80 +37,28 @@ class ClassFactory
         ClassSubject $subject,
         ClassMethodNode $node,
     ): void {
-        /** @var null|Php $php */
-        $php = $subject->php;
-        if ($php) {
-
-            $subject = $php->subjects()
-                ->where('name', $node->getName())
-                ->first();
-
-            if (! $subject) {
-
-                if ($php->subjects()
-                    ->where('type', 'method')->count()) {
-                    $processed = $php->subjects()
-                        ->where('type', 'method')
-                        ->max('processed')+1;
-                    if (! static::$maxMethod) {
-                        static::$maxMethod = $processed;
-                    }
-                }
-
-                $subject = $php->subjects()->create([
-                    'name' => $node->getName(),
-                    'type' => 'method',
-                    'processed' => static::$maxMethod,
-                ]);
-            } else {
-                $subject->increment('processed');
-            }
-        }
+        PhpSubject::createOrUpdateSubject(
+            $subject, $node, 'method'
+        );
     }
 
     public function onPropertyCreate(
         ClassSubject $subject,
         ClassPropertyNode $node,
     ): void {
-        /** @var null|Php $php */
-        $php = $subject->php;
-        if ($php) {
-
-            $subject = $php->subjects()
-                ->where('name', $node->getName())
-                ->first();
-
-            if (! $subject) {
-
-                if ($php->subjects()
-                    ->where('type', 'property')->count()) {
-                    $processed = $php->subjects()
-                        ->where('type', 'property')
-                        ->max('processed')+1;
-                    if (! static::$maxProperty) {
-                        static::$maxProperty = $processed;
-                    }
-                }
-
-                $subject = $php->subjects()->create([
-                    'name' => $node->getName(),
-                    'type' => 'property',
-                    'processed' => static::$maxProperty,
-                ]);
-            } else {
-                $subject->increment('processed');
-            }
-        }
+        PhpSubject::createOrUpdateSubject(
+            $subject, $node, 'property'
+        );
     }
 
     /**
      * @template Subject
-     * @param  ModelTopic  $modelTopic
      * @param  string  $type
      * @param  string  $value
+     * @param  ModelTopic|null  $modelTopic
      * @return Subject
      */
-    public function watchClass(ModelTopic $modelTopic, string $type, string $value): ClassSubject
+    public function watchClass(string $type, string $value, ?ModelTopic $modelTopic): ClassSubject
     {
         $subject = \php()->{$type}($value);
 
@@ -119,22 +67,31 @@ class ClassFactory
             return $this->classes[$subject->fileSubject->file];
         }
 
-        $php = Php::findByTopic($modelTopic);
+        if ($modelTopic) {
 
-        if ($php) {
-            $file = str_replace(base_path(), '', $subject->fileSubject->file);
-            if ($file !== $php->file) {
-                rename(
-                    base_path($php->file),
-                    base_path($file)
-                );
-                $subject = \php()->{$type}($value);
+            $classType = $subject instanceof InterfaceSubject ? 'interface'
+                : ($subject instanceof TraitSubject ? 'trait' : ($subject instanceof AnonymousClassSubject ? 'anonymous': 'class'));
+
+            $php = Php::where('inode', fileinode($subject->fileSubject->file))->first();
+            $php = $php ?: Php::findByTopic($modelTopic, $classType);
+
+            if ($php) {
+                $file = str_replace(base_path(), '', $subject->fileSubject->file);
+                if ($file !== $php->file) {
+                    if (is_file(base_path($php->file))) {
+                        rename(
+                            base_path($php->file),
+                            base_path($file)
+                        );
+                    }
+                    $subject = \php()->{$type}($value);
+                }
             }
+
+            $subject->php = $php;
+
+            $subject->modelTopic = $modelTopic;
         }
-
-        $subject->php = $php;
-
-        $subject->modelTopic = $modelTopic;
 
         return $this->classes[$subject->fileSubject->file]
             = $subject;
@@ -142,7 +99,7 @@ class ClassFactory
 
     /**
      * @return $this
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws BindingResolutionException
      */
     public function generate(): static
     {
@@ -150,7 +107,7 @@ class ClassFactory
 
             if ($generator = $topic::getGenerator()) {
 
-                app()->make($generator);
+                $this->generatorInstances[] = app()->make($generator);
             }
         }
 
@@ -160,8 +117,10 @@ class ClassFactory
     /**
      * @return $this
      */
-    public function save(callable $cb): static
+    public function save(callable $cb, callable $cbDel): static
     {
+        $saved = [];
+
         foreach ($this->classes as $class) {
 
             if (
@@ -174,10 +133,23 @@ class ClassFactory
 
                 $class->save();
 
+                $saved[$class->fileSubject->file] = str_replace(base_path(), '', $class->fileSubject->file);
+
                 Php::createOrUpdatePhp($class);
 
                 call_user_func($cb, $class);
             }
+        }
+
+        foreach (Php::whereNotIn('file', $saved)->get() as $item) {
+            @ unlink(base_path($item->file));
+            $item->subjects()->delete();
+            $item->delete();
+            call_user_func($cbDel, $item->file);
+        }
+
+        foreach ($this->generatorInstances as $generatorInstance) {
+            $generatorInstance->afterSave();
         }
 
         return $this;
@@ -194,7 +166,8 @@ class ClassFactory
         if ($php) {
             $maxMethod = $php->subjects()
                 ->where('type', 'method')
-                ->max('processed');
+                ->max('processed') ?: 0;
+
             $listMethods = $php->subjects()
                 ->where('type', 'method')
                 ->where('processed', '<', $maxMethod)
@@ -207,7 +180,8 @@ class ClassFactory
             }
             $maxProperty = $php->subjects()
                 ->where('type', 'property')
-                ->max('processed');
+                ->max('processed') ?: 0;
+
             $listProperties = $php->subjects()
                 ->where('type', 'property')
                 ->where('processed', '<', $maxProperty)
@@ -222,50 +196,50 @@ class ClassFactory
     }
 
     /**
-     * @param $value
-     * @param  ModelTopic  $modelTopic
+     * @param  string  $file
+     * @param  ModelTopic|null  $modelTopic
      * @return AnonymousClassSubject
      */
-    public function anonymousClass($value, ModelTopic $modelTopic): AnonymousClassSubject
+    public function anonymousClass(string $file, ModelTopic $modelTopic = null): AnonymousClassSubject
     {
         return $this->watchClass(
-            $modelTopic, 'anonymousClass', $value
+            'anonymousClass', $file, $modelTopic
         );
     }
 
     /**
-     * @param $value
-     * @param  ModelTopic  $modelTopic
+     * @param  string  $class
+     * @param  ModelTopic|null  $modelTopic
      * @return ClassSubject
      */
-    public function class($value, ModelTopic $modelTopic): ClassSubject
+    public function class(string $class, ModelTopic $modelTopic = null): ClassSubject
     {
         return $this->watchClass(
-            $modelTopic, 'class', $value
+            'class', $class, $modelTopic
         );
     }
 
     /**
-     * @param $value
-     * @param  ModelTopic  $modelTopic
+     * @param  string  $class
+     * @param  ModelTopic|null  $modelTopic
      * @return InterfaceSubject
      */
-    public function interface($value, ModelTopic $modelTopic): InterfaceSubject
+    public function interface(string $class, ModelTopic $modelTopic = null): InterfaceSubject
     {
         return $this->watchClass(
-            $modelTopic, 'interface', $value
+            'interface', $class, $modelTopic
         );
     }
 
     /**
-     * @param $value
-     * @param  ModelTopic  $modelTopic
+     * @param  string  $class
+     * @param  ModelTopic|null  $modelTopic
      * @return TraitSubject
      */
-    public function trait($value, ModelTopic $modelTopic): TraitSubject
+    public function trait(string $class, ModelTopic $modelTopic = null): TraitSubject
     {
-        return $this->watchClass(
-            $modelTopic, 'trait', $value
+        return$this->watchClass(
+            'trait', $class, $modelTopic
         );
     }
 }

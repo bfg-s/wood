@@ -3,13 +3,13 @@
 namespace Bfg\Wood\Generators;
 
 use Bfg\Comcode\Subjects\DocSubject;
-use Bfg\Falsework\Topic\ModelFieldTopic;
 use Bfg\Wood\Generators\ModelGenerator\ModelFactoryGenerator;
+use Bfg\Wood\Generators\ModelGenerator\ModelMigrationGenerator;
+use Bfg\Wood\Generators\ModelGenerator\ModelObserverGenerator;
 use Bfg\Wood\Generators\ModelGenerator\ModelRelationGenerator;
 use Bfg\Wood\Models\Model;
 use Bfg\Wood\Models\ModelField;
 use Bfg\Wood\Models\ModelImplement;
-use Bfg\Wood\Models\ModelRelation;
 use Bfg\Wood\Models\ModelTrait;
 use Bfg\Wood\Models\Topic;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,6 +26,8 @@ class ModelGenerator extends GeneratorAbstract
     protected array $child = [
         ModelFactoryGenerator::class,
         ModelRelationGenerator::class,
+        ModelMigrationGenerator::class,
+        ModelObserverGenerator::class,
     ];
 
     /**
@@ -196,7 +198,10 @@ class ModelGenerator extends GeneratorAbstract
             ->where('hidden', false)
             ->pluck('name');
 
-        $foreigns = $this->related()->get()->pluck('foreign');
+        $foreigns = $this->related()
+            ->where('type', '!=', 'belongsToMany')
+            ->get()
+            ->pluck('foreign');
 
         $names = $names->merge($foreigns);
 
@@ -240,6 +245,13 @@ class ModelGenerator extends GeneratorAbstract
             ->mapWithKeys(
                 fn(ModelField $field) => [$field->name => $field->cast]
             );
+
+        $foreigns = $this->related()
+            ->where('type', '!=', 'belongsToMany')
+            ->get()
+            ->pluck('foreign');
+
+        $casts = $casts->merge($foreigns->mapWithKeys(fn ($i) => [$i => 'int']));
 
         if ($casts->isNotEmpty()) {
 
