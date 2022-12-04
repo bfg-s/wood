@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'migration_prepend' => '2022_12_01',
     'connection' => [
         'driver' => 'sqlite',
         'url' => null,

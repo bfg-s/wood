@@ -200,10 +200,27 @@ class ModelGenerator extends GeneratorAbstract
 
         $foreigns = $this->related()
             ->where('type', '!=', 'belongsToMany')
+            ->where('type', '!=', 'morphTo')
+            ->where('type', '!=', 'morphOne')
+            ->where('type', '!=', 'morphMany')
+            ->where('type', '!=', 'morphToMany')
+            ->where('type', '!=', 'morphedByMany')
             ->get()
             ->pluck('foreign');
 
-        $names = $names->merge($foreigns);
+        $morphForeigns = $this->related()
+            ->whereIn('type', [
+                'morphTo', 'morphOne', 'morphMany', 'morphToMany', 'morphedByMany'
+            ])
+            ->get()
+            ->pluck('able')
+            ->map(
+                fn (string $able)
+                => [$able.'_type', $able.'_id']
+            )->collapse()->unique();
+
+        $names = $names->merge($foreigns)
+            ->merge($morphForeigns);
 
         if ($names->isNotEmpty()) {
             $this->class->protectedProperty(
@@ -224,7 +241,9 @@ class ModelGenerator extends GeneratorAbstract
             ->where('hidden', true)
             ->pluck('name');
 
+
         if ($names->isNotEmpty()) {
+
             $this->class->protectedProperty(
                 'hidden', $names->toArray()
             )->comment(
@@ -239,19 +258,25 @@ class ModelGenerator extends GeneratorAbstract
      */
     protected function casts(): void
     {
-        $casts = $this->fields()
+        $casts = collect($this->fields()
             ->where('cast', '!=', 'string')
             ->get()
             ->mapWithKeys(
                 fn(ModelField $field) => [$field->name => $field->cast]
-            );
+            ));
 
         $foreigns = $this->related()
             ->where('type', '!=', 'belongsToMany')
+            ->where('type', '!=', 'morphTo')
+            ->where('type', '!=', 'morphOne')
+            ->where('type', '!=', 'morphMany')
+            ->where('type', '!=', 'morphToMany')
+            ->where('type', '!=', 'morphedByMany')
             ->get()
-            ->pluck('foreign');
+            ->pluck('foreign')
+            ->mapWithKeys(fn ($i) => [$i => 'int']);
 
-        $casts = $casts->merge($foreigns->mapWithKeys(fn ($i) => [$i => 'int']));
+        $casts = $casts->merge($foreigns);
 
         if ($casts->isNotEmpty()) {
 

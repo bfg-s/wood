@@ -5,6 +5,7 @@ namespace Bfg\Wood\Models;
 use Bfg\Comcode\Subjects\AnonymousClassSubject;
 use Bfg\Comcode\Subjects\ClassSubject;
 use Bfg\Wood\Casts\AnonymousClassCast;
+use Bfg\Wood\Generators\PivotMigrationsGenerator;
 use Bfg\Wood\Generators\ModelGenerator;
 use Bfg\Wood\ModelTopic;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -64,9 +65,12 @@ use Illuminate\Support\Str;
 class Model extends ModelTopic
 {
     /**
-     * @var string|null
+     * @var array|string[]
      */
-    protected static ?string $generator = ModelGenerator::class;
+    protected static array $generators = [
+        'general' => ModelGenerator::class,
+        'belongsToManyMigrations' => PivotMigrationsGenerator::class,
+    ];
 
     /**
      * @var string|null
@@ -222,14 +226,14 @@ class Model extends ModelTopic
      */
     public function getMigrationClassAttribute(): AnonymousClassSubject
     {
-        $date = Config::where('name', 'migration_prepend')->first()?->value ?: '2022_02_22';
+        $date = config('wood.migration_prepend', '2022_12_01');
         return (new AnonymousClassCast())->get(
             $this,
             'migration_class',
             database_path(
                 "migrations/{$date}_"
-                .str_repeat('0', 6 - strlen($this->id))
-                .$this->id."_create_".$this->table()."_table.php"
+                .str_repeat('0', 6 - strlen($this->order))
+                .$this->order."_create_".$this->table()."_table.php"
             ),
             $this->attributes
         );

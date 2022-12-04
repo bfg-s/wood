@@ -34,9 +34,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Seed extends ModelTopic
 {
     /**
-     * @var string|null
+     * @var array|string[]
      */
-    protected static ?string $generator = SeedGenerator::class;
+    protected static array $generators = [
+        'general' => SeedGenerator::class
+    ];
 
     /**
      * @var string

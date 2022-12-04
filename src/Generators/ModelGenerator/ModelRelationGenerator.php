@@ -65,20 +65,39 @@ class ModelRelationGenerator extends GeneratorAbstract
             $relation,
             $this->__makeRealClass($related->class->class),
             $this->table() . '_' . $relation->name,
-            $related->foreign_id,
             $this->foreign_id,
+            $related->foreign_id,
         );
     }
 
     protected function __related_belongsToMany(ModelRelation $relation)
     {
+        $related = $relation->model()->first();
+        $this->__related_method(
+            $relation,
+            $this->__makeRealClass($relation->model->class->class),
+            $related->table() . '_' . $relation->name,
+            $this->foreign_id,
+            $related->foreign_id,
+        );
+    }
+
+    protected function __morphOne(ModelRelation $relation)
+    {
         $related = $relation->related_model()->first();
         $this->__relation_method(
             $relation,
-            $this->__makeRealClass($relation->model->class->class),
-            $this->table() . '_' . $relation->name,
-            $this->foreign_id,
-            $related->foreign_id,
+            $this->__makeRealClass($related->class->class),
+            $relation->able,
+        );
+    }
+
+    protected function __related_morphOne(ModelRelation $relation)
+    {
+        //$related = $relation->model()->first();
+        $this->__related_method(
+            $relation,
+            $relation->able,
         );
     }
 
@@ -90,14 +109,16 @@ class ModelRelationGenerator extends GeneratorAbstract
         //$cfg = config("wood.relation_types." . $relation->reverse_type);
 
         $method = $this->class->publicMethod([
-            $relation->relation_class,
-            $relation->reverse_name,
+            $relation->reverse_type_class,
+            $relation->reverse_type === 'morphTo'
+                ? $relation->able
+                : $relation->reverse_name,
         ]);
 
         $method->return()
             ->this()
             ->func(
-                $relation->type,
+                $relation->reverse_type,
                 ...$args
             );
 
@@ -115,7 +136,9 @@ class ModelRelationGenerator extends GeneratorAbstract
     ): ClassMethodNode {
         $method = $this->class->publicMethod([
             $relation->relation_class,
-            $relation->name
+            $relation->type === 'morphTo'
+                ? $relation->able
+                : $relation->name
         ]);
 
         $method->return()

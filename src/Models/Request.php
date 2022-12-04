@@ -32,9 +32,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Request extends ModelTopic
 {
     /**
-     * @var string|null
+     * @var array|string[]
      */
-    protected static ?string $generator = RequestGenerator::class;
+    protected static array $generators = [
+        'general' => RequestGenerator::class
+    ];
 
     /**
      * @var string

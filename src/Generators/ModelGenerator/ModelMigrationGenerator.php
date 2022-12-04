@@ -60,10 +60,9 @@ class ModelMigrationGenerator extends GeneratorAbstract
                                     }
                                     continue;
                                 }
-                                $isForeign = "foreignId" === $field->type;
-                                $canCascade = $isForeign && $field->constrained;
+
                                 $node->line()->var('table')
-                                    ->func($field->type, $field->name, ...($field->type_details ?? []))
+                                    ->func($field->type, $field->name, ...($field->type_parameters ?? []))
                                     ->when($field->nullable, fn(InlineTrap $trap) => $trap->func('nullable'))
                                     ->when($field->has_default,
                                         fn(InlineTrap $trap) => $trap->func('default', $field->default))
@@ -71,21 +70,25 @@ class ModelMigrationGenerator extends GeneratorAbstract
                                         fn(InlineTrap $trap) => $trap->func('comment', $field->comment))
                                     ->when($field->unique, fn(InlineTrap $trap) => $trap->func('unique'))
                                     ->when($field->unsigned, fn(InlineTrap $trap) => $trap->func('unsigned'))
-                                    ->when($field->primary, fn(InlineTrap $trap) => $trap->func('primary'))
                                     ->when($field->index, fn(InlineTrap $trap) => $trap->func('index'))
-                                    ->when($canCascade && $field->cascade_on_update,
-                                        fn(InlineTrap $trap) => $trap->func('cascadeOnUpdate'))
-                                    ->when($canCascade && $field->cascade_on_delete,
-                                        fn(InlineTrap $trap) => $trap->func('cascadeOnDelete'))
-                                    ->when($canCascade && $field->null_on_delete,
-                                        fn(InlineTrap $trap) => $trap->func('nullOnDelete'));
+                                    ->when($field->type_parameters,
+                                        fn (InlineTrap $trap) => collect($field->type_details)->map(
+                                            fn ($params, $name)
+                                            => $trap->func($name, ...(is_array($params) ? $params : [$params]))
+                                        )
+                                    );
                             }
 
                             $foreigns = $this->related()
                                 ->where('type', '!=', 'belongsToMany')
+                                ->where('type', '!=', 'morphTo')
+                                ->where('type', '!=', 'morphOne')
+                                ->where('type', '!=', 'morphMany')
+                                ->where('type', '!=', 'morphToMany')
+                                ->where('type', '!=', 'morphedByMany')
                                 ->get();
-                            //->pluck('foreign');
 
+                            $foreign = null;
                             /** @var ModelRelation $foreign */
                             foreach ($foreigns as $foreign) {
                                 $node->line()->var('table')
@@ -98,6 +101,18 @@ class ModelMigrationGenerator extends GeneratorAbstract
                                         fn(InlineTrap $trap) => $trap->func('cascadeOnDelete'))
                                     ->when($foreign->null_on_delete,
                                         fn(InlineTrap $trap) => $trap->func('nullOnDelete'));
+                            }
+
+                            $morphForeigns = $this->related()
+                                ->whereIn('type', [
+                                    'morphTo', 'morphOne', 'morphMany', 'morphToMany', 'morphedByMany'
+                                ])
+                                ->get()->unique('able');
+
+                            /** @var ModelRelation $morphForeign */
+                            foreach ($morphForeigns as $morphForeign) {
+                                $node->line()->var('table')
+                                    ->func($morphForeign->nullable ? 'nullableMorphs' : 'morphs', $morphForeign->able);
                             }
 
                             if (

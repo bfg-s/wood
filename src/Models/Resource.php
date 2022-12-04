@@ -27,9 +27,11 @@ use Bfg\Wood\ModelTopic;
 class Resource extends ModelTopic
 {
     /**
-     * @var string|null
+     * @var array|string[]
      */
-    protected static ?string $generator = ResourceGenerator::class;
+    protected static array $generators = [
+        ResourceGenerator::class
+    ];
 
     /**
      * @var string

@@ -2,6 +2,8 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\AnonymousClassSubject;
+use Bfg\Wood\Casts\AnonymousClassCast;
 use Bfg\Wood\ModelTopic;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
@@ -23,9 +25,11 @@ use Illuminate\Support\Str;
  * @property bool $null_on_delete
  * @property string $reverse_name
  * @property string $reverse_type
+ * @property string $reverse_type_class
  * @property int $related_model_id
  * @property int $order
  * @property int $model_id
+ * @property AnonymousClassSubject $pivot_migration_class
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Bfg\Wood\Models\Model|null $related_model
@@ -79,10 +83,21 @@ class ModelRelation extends ModelTopic
      * @var array
      */
     public static array $schema = [
+        'related_model' => [
+            'select' => 'class', // select - modifier, class - field name for selection
+            'info' => 'Related relation model',
+            'copy_value_to' => [
+                ['name'],
+            ],
+        ],
         'name' => [
             'string',
-            'regexp' => '^\w*$',
+            'regexp' => '^\w+$',
             'info' => 'The relation name',
+            'nullable' => true,
+            'copy_value_to' => [
+                ['able', 'able'],
+            ],
         ],
         'type' => [
             'string',
@@ -101,10 +116,27 @@ class ModelRelation extends ModelTopic
                 'morphedByMany',
             ],
             'info' => 'The relation type',
-        ],
-        'related_model' => [
-            'select' => 'class', // select - modifier, class - field name for selection
-            'info' => 'Related relation model',
+            'when_value_is' => [
+                'hasOne' => ['reverse_type' => 'hasMany'],
+                'hasMany' => ['reverse_type' => 'hasOne'],
+                'morphOne' => ['reverse_type' => 'morphTo'],
+                'morphMany' => ['reverse_type' => 'morphTo'],
+                'morphToMany' => ['reverse_type' => 'morphedByMany'],
+                'belongsToMany' => ['reverse_type' => 'belongsToMany'],
+            ],
+            'pluralize' => [
+                ['hasMany', 'plural', 'name'],
+                ['hasManyThrough', 'plural', 'name'],
+                ['hasOneThrough', 'singular', 'name'],
+                ['belongsToMany', 'plural', 'name'],
+                ['hasOne', 'singular', 'name'],
+                ['belongsTo', 'plural', 'name'],
+                ['morphTo', 'plural', 'name'],
+                ['morphOne', 'singular', 'name'],
+                ['morphMany', 'plural', 'name'],
+                ['morphToMany', 'plural', 'name'],
+                ['morphedByMany', 'plural', 'name'],
+            ]
         ],
         'reverse_name' => [
             'string',
@@ -115,7 +147,7 @@ class ModelRelation extends ModelTopic
         ],
         'reverse_type' => [
             'string',
-            'default' => '',
+            'default' => 'hasMany',
             'nullable' => true,
             'possible' => [
                 '',
@@ -137,6 +169,13 @@ class ModelRelation extends ModelTopic
             'string',
             'nullable' => true,
             'info' => 'Able name for morph relations',
+            'if_is' => [
+                ['type', 'morphTo'],
+                ['type', 'morphOne'],
+                ['type', 'morphMany'],
+                ['type', 'morphToMany'],
+                ['type', 'morphedByMany'],
+            ],
         ],
         'with' => [
             'bool',
@@ -225,7 +264,7 @@ class ModelRelation extends ModelTopic
      */
     public function getReverseNameAttribute($value): string
     {
-        $value = $value ?: $this->model()->first()->getTableAttribute();
+        $value = $value ?: $this->model()->first()->table();
 
         if ($this->type) {
 
@@ -235,5 +274,50 @@ class ModelRelation extends ModelTopic
         }
 
         return $value;
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public function getReverseTypeAttribute($value): string
+    {
+        if ($this->type) {
+
+            return $value ?: config("wood.relation_types." . $this->type . ".reverses");
+        }
+
+        return $value ?: 'hasOne';
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public function getReverseTypeClassAttribute(): string
+    {
+        $reverse_type = $this->reverse_type ?: config("wood.relation_types." . $this->type . ".reverses");
+
+        return config("wood.relation_types." . $reverse_type . '.class', HasOne::class);
+    }
+
+    /**
+     * @return AnonymousClassSubject
+     */
+    public function getPivotMigrationClassAttribute(): AnonymousClassSubject
+    {
+        $model = $this->model()->first();
+        $table = $model->table() . '_' . $this->name;
+
+        $date = config('wood.migration_prepend', '2022_12_01');
+        return (new AnonymousClassCast())->get(
+            $this,
+            'migration_class',
+            database_path(
+                "migrations/{$date}_999999"
+                ."_create_".$table."_table.php"
+            ),
+            $this->attributes
+        );
     }
 }

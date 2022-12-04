@@ -11,6 +11,7 @@ use Bfg\Wood\ModelTopic;
  * @property string $name
  * @property string $type
  * @property array $type_details
+ * @property array $type_parameters
  * @property string $cast
  * @property bool $has_default
  * @property string|null $default
@@ -86,28 +87,31 @@ class ModelField extends ModelTopic
             'info' => 'Field name',
             'regexp' => '^\w*$',
             'possibleTable' => 'model_fields:name',
-            'when_value_is' => [
-                'text' => ['type' => 'text', 'type_parameters' => [], 'cast' => 'string'],
-                'info' => ['type' => 'text', 'type_parameters' => [], 'cast' => 'string'],
-                'price' => ['type' => 'float', 'type_parameters' => [12, 2], 'cast' => 'float'],
-                'amount' => ['type' => 'float', 'type_parameters' => [8, 2], 'cast' => 'float'],
-                'email' => ['type' => 'string', 'nullable' => true, 'type_parameters' => [], 'cast' => 'string'],
-                'phone' => ['type' => 'string', 'type_parameters' => [64], 'nullable' => true, 'cast' => 'string'],
-                'description' => ['type' => 'text', 'nullable' => true, 'type_parameters' => [], 'cast' => 'string'],
-                'order' => ['type' => 'integer', 'default' => 0, 'has_default' => true, 'type_parameters' => [], 'cast' => 'integer'],
-                'active' => ['type' => 'boolean', 'default' => true, 'type_parameters' => [], 'cast' => 'boolean'],
-
-                'is_*' => ['type' => 'boolean', 'default' => 1, 'has_default' => true, 'type_parameters' => [], 'cast' => 'boolean'],
-                'price_*' => ['type' => 'float', 'type_parameters' => [12, 2], 'cast' => 'float'],
-                'amount_*' => ['type' => 'float', 'type_parameters' => [8, 2], 'cast' => 'float'],
-                '*_price' => ['type' => 'float', 'type_parameters' => [12, 2], 'cast' => 'float'],
-                '*_amount' => ['type' => 'float', 'type_parameters' => [8, 2], 'cast' => 'float'],
-                '*_num' => ['type' => 'integer', 'type_parameters' => [], 'cast' => 'integer'],
-                '*_id' => ['type' => 'integer', 'type_parameters' => [], 'cast' => 'integer'],
-                '*_at' => ['type' => 'timestamp', 'nullable' => true, 'type_parameters' => [], 'cast' => 'datetime'],
-                '*_text' => ['type' => 'longText', 'nullable' => true, 'type_parameters' => [], 'cast' => 'string'],
-                '*_count' => ['type' => 'integer', 'default' => 0, 'has_default' => true, 'type_parameters' => [], 'cast' => 'integer'],
-                '*_description' => ['type' => 'mediumText', 'nullable' => true, 'type_parameters' => [], 'cast' => 'string'],
+        ],
+        'cast' => [
+            'string',
+            'default' => 'string',
+            'info' => 'Field cast type',
+            'possible' => [
+                'string',
+                'integer',
+                'boolean',
+                'timestamp',
+                'array',
+                'double',
+                'float',
+                'decimal: <digits>',
+                'date',
+                'datetime',
+                'immutable_date',
+                'immutable_datetime',
+                'encrypted',
+                'encrypted:array',
+                'encrypted:collection',
+                'encrypted:object',
+                'collection',
+                'object',
+                'real',
             ]
         ],
         'type' => [
@@ -203,32 +207,6 @@ class ModelField extends ModelTopic
                 'year' => ['cast' => 'integer'],
             ],
         ],
-        'cast' => [
-            'string',
-            'default' => 'string',
-            'info' => 'Field cast type',
-            'possible' => [
-                'string',
-                'integer',
-                'boolean',
-                'timestamp',
-                'array',
-                'double',
-                'float',
-                'decimal: <digits>',
-                'date',
-                'datetime',
-                'immutable_date',
-                'immutable_datetime',
-                'encrypted',
-                'encrypted:array',
-                'encrypted:collection',
-                'encrypted:object',
-                'collection',
-                'object',
-                'real',
-            ]
-        ],
         'type_parameters' => [
             'array',
             'taggable' => true,
@@ -277,9 +255,9 @@ class ModelField extends ModelTopic
                 'Unsigned' => ['unsigned' => []],
                 'Primary' => ['primary' => []],
                 'Constrained' => ['constrained' => ''],
-                'Cascade on update' => ['cascade_on_update' => []],
-                'Cascade on delete' => ['cascade_on_delete' => []],
-                'Null on delete' => ['null_on_delete' => []],
+                'Cascade on update' => ['cascadeOnUpdate' => []],
+                'Cascade on delete' => ['cascadeOnDelete' => []],
+                'Null on delete' => ['nullOnDelete' => []],
             ]
         ],
     ];

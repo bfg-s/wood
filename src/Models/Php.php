@@ -18,6 +18,8 @@ use ReflectionException;
  * @property string $type
  * @property string $file
  * @property int $inode
+ * @property int $max_property
+ * @property int $max_method
  * @property string $name
  * @method static \Illuminate\Database\Eloquent\Builder|Php newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Php newQuery()
@@ -47,6 +49,8 @@ class Php extends ModelTopic
         'processed',
         'topic_type',
         'topic_id',
+        'max_property',
+        'max_method',
     ];
 
     /**

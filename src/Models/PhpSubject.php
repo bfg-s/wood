@@ -57,11 +57,6 @@ class PhpSubject extends ModelTopic
      */
     public $timestamps = false;
 
-    static array $maxs = [
-        'method' => 0,
-        'property' => 0
-    ];
-
     public static function createOrUpdateSubject(
         ClassSubject $subject,
         ClassMethodNode|ClassPropertyNode $node,
@@ -72,25 +67,16 @@ class PhpSubject extends ModelTopic
         if ($php) {
 
             $subject = $php->subjects()
+                ->where('type', $type)
                 ->where('name', $node->getName())
                 ->first();
 
             if (! $subject) {
 
-                if ($php->subjects()
-                    ->where('type', 'method')->count()) {
-                    $processed = $php->subjects()
-                            ->where('type', 'method')
-                            ->max('processed')+1;
-                    if (! static::$maxs[$type]) {
-                        static::$maxs[$type] = $processed;
-                    }
-                }
-
                 $php->subjects()->create([
                     'name' => $node->getName(),
                     'type' => $type,
-                    'processed' => static::$maxs[$type],
+                    'processed' => $php->{"max_" . $type},
                 ]);
             } else {
                 $subject->increment('processed');

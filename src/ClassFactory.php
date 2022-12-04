@@ -105,9 +105,10 @@ class ClassFactory
     {
         foreach (\Wood::getTopics() as $topic) {
 
-            if ($generator = $topic::getGenerator()) {
-
-                $this->generatorInstances[] = app()->make($generator);
+            if ($generators = $topic::getGenerators()) {
+                foreach ($generators as $generator) {
+                    $this->generatorInstances[] = app()->make($generator);
+                }
             }
         }
 
@@ -122,7 +123,6 @@ class ClassFactory
         $saved = [];
 
         foreach ($this->classes as $class) {
-
             if (
                 ! str_starts_with(
                     $class->fileSubject->file,
@@ -131,6 +131,19 @@ class ClassFactory
             ) {
                 $this->cleanClass($class);
 
+                $class->php?->increment('max_method');
+                $class->php?->increment('max_property');
+            }
+        }
+
+        foreach ($this->classes as $class) {
+
+            if (
+                ! str_starts_with(
+                    $class->fileSubject->file,
+                    base_path('vendor')
+                )
+            ) {
                 $class->save();
 
                 $saved[$class->fileSubject->file] = str_replace(base_path(), '', $class->fileSubject->file);
@@ -164,9 +177,7 @@ class ClassFactory
         /** @var null|Php $php */
         $php = $subject->php;
         if ($php) {
-            $maxMethod = $php->subjects()
-                ->where('type', 'method')
-                ->max('processed') ?: 0;
+            $maxMethod = $php->max_method;
 
             $listMethods = $php->subjects()
                 ->where('type', 'method')
@@ -178,9 +189,8 @@ class ClassFactory
                 //dump("Delete method: " . $method->name . ", Max: " . $maxMethod . ", Current: " . $method->processed);
                 $method->delete();
             }
-            $maxProperty = $php->subjects()
-                ->where('type', 'property')
-                ->max('processed') ?: 0;
+
+            $maxProperty = $php->max_property;
 
             $listProperties = $php->subjects()
                 ->where('type', 'property')

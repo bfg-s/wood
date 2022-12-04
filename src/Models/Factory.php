@@ -19,9 +19,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Factory extends ModelTopic
 {
     /**
-     * @var string|null
+     * @var array|string[]
      */
-    protected static ?string $generator = FactoryGenerator::class;
+    protected static array $generators = [
+        'general' => FactoryGenerator::class
+    ];
 
     /**
      * @var string

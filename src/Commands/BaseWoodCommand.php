@@ -55,6 +55,8 @@ abstract class BaseWoodCommand extends Command
                 $table->string('name');
                 $table->morphs('topic');
                 $table->integer('processed')->default(0);
+                $table->integer('max_property')->default(0);
+                $table->integer('max_method')->default(0);
             });
 
             $this->info('PHP table, created!');

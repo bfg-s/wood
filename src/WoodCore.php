@@ -23,7 +23,6 @@ class WoodCore
         'observer' => ModelObserver::class,
         'request' => Request::class,
         'resource' => Resource::class,
-        'config' => Config::class,
     ];
 
     /**

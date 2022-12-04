@@ -32,9 +32,11 @@ use Bfg\Wood\ModelTopic;
 class ModelObserver extends ModelTopic
 {
     /**
-     * @var string|null
+     * @var array|string[]
      */
-    protected static ?string $generator = ModelObserverGenerator::class;
+    protected static array $generators = [
+        ModelObserverGenerator::class
+    ];
 
     /**
      * @var string
