@@ -14,7 +14,8 @@
         "php": ">=8.0.0",
         "bfg/comcode": "^0.6.5",
         "elementaryframework/fire-fs": "^1.2",
-        "laravel/framework": "^8|^9"
+        "laravel/framework": "^8|^9",
+        "workerman/workerman": "^4.1"
     },
     "require-dev": {},
     "autoload": {
