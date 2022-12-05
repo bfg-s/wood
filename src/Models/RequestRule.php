@@ -2,7 +2,13 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\AnonymousClassSubject;
+use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Wood\Casts\AnonymousClassCast;
+use Bfg\Wood\Casts\ClassCast;
+use Bfg\Wood\ClassFactory;
 use Bfg\Wood\ModelTopic;
+use ErrorException;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -10,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  *
  * @property int $id
  * @property string $name
- * @property string|null $rule
+ * @property string|null $rules
  * @property mixed|null|null $class
  * @property int $order
  * @property int $request_id
@@ -154,4 +160,14 @@ class RequestRule extends ModelTopic
             'info' => 'Request rules (Can be class)',
         ],
     ];
+
+    /**
+     * @param  string  $name
+     * @return ClassSubject|null
+     */
+    public function isClass(string $name): ?ClassSubject
+    {
+        return $name != strtolower($name) ? app(ClassFactory::class)
+            ->class("App\\Rules\\$name", $this) : null;
+    }
 }

@@ -46,15 +46,8 @@ class Factory extends ModelTopic
     public static array $schema = [
         'model' => [
             'unique' => true,
-            'prepend' => "Database\\Factories\\",
             'select' => 'class', // select - modifier, class - field name for selection
             'info' => 'The model for which the factory will be created',
-        ],
-        'count' => [
-            'int',
-            'default' => 1,
-            'info' => 'The count of factory creating rows',
-            'regexp' => '^\d*$',
         ],
         'lines' => [],
     ];

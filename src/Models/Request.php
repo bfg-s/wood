@@ -60,6 +60,7 @@ class Request extends ModelTopic
         'class' => [
             'class',
             'prepend' => "App\\Http\\Requests\\",
+            'append' => "Request",
             'regexp' => '^([A-Z]\w*\\\\?)+(?<!\\\\)$',
             'info' => 'Request class name',
         ],

@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property ClassSubject $class
  * @property int $model_id
  * @property int $order
+ * @property int $count
+ * @property bool $factory
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Bfg\Wood\Models\Model|null $model
@@ -64,11 +66,24 @@ class Seed extends ModelTopic
             'info' => 'Seed class name',
             'unique' => true,
             'prepend' => "Database\\Seeders\\",
+            'append' => "Seeder",
             'regexp' => '^([A-Z]\w*\\\\?)+(?<!\\\\)$',
         ],
         'model' => [
             'select' => 'class',
             'info' => 'Model for the seed'
+        ],
+        'factory' => [
+            'bool',
+            'default' => false,
+            'info' => 'Use the factory',
+        ],
+        'count' => [
+            'int',
+            'default' => 1,
+            'info' => 'The count of factory creating rows',
+            'regexp' => '^\d*$',
+            'if_not' => 'factory',
         ],
         'rows' => [
             'info' => 'Seeding data lines'

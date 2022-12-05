@@ -1,0 +1,205 @@
+<?php
+
+include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
+
+$host = '0.0.0.0';
+$port = 2020;
+
+if (isset($argv[1]) && $argv[1] && ! is_numeric($argv[1])) {
+    $host = $argv[1];
+} else if (isset($argv[1]) && $argv[1]) {
+    $port = $argv[1];
+}
+
+if (isset($argv[2]) && $argv[2] && ! is_numeric($argv[2])) {
+    $host = $argv[2];
+} else if (isset($argv[2]) && $argv[2]) {
+    $port = $argv[2];
+}
+
+
+class HookWorker extends \Workerman\Worker
+{
+    public static function runAll()
+    {
+        static::checkSapiEnv();
+        static::init();
+        static::daemonize();
+        static::initWorkers();
+        static::installSignal();
+        static::saveMasterPid();
+        static::displayUI();
+        static::forkWorkers();
+        static::resetStd();
+        static::monitorWorkers();
+    }
+}
+
+$php = (new PhpExecutableFinder)->find();
+
+$host = 'tcp://' . $host
+    . ':'
+    . $port;
+$tcp_worker = new HookWorker($host);
+$tcp_worker->count = 4;
+$tcp_worker->onConnect = function ($connection) {
+    echo "Wood client connected!\n";
+};
+$tcp_worker->onMessage = function ($connection, $data) use ($php) {
+    $connection->send("loading");
+    system("$php $data");
+    $connection->send("loaded");
+};
+$tcp_worker->onClose = function ($connection) {
+    echo "Wood client disconnected!\n";
+};
+
+HookWorker::runAll();
+
+class ExecutableFinder
+{
+    private $suffixes = ['.exe', '.bat', '.cmd', '.com'];
+
+    /**
+     * Replaces default suffixes of executable.
+     */
+    public function setSuffixes(array $suffixes)
+    {
+        $this->suffixes = $suffixes;
+    }
+
+    /**
+     * Adds new possible suffix to check for executable.
+     */
+    public function addSuffix(string $suffix)
+    {
+        $this->suffixes[] = $suffix;
+    }
+
+    /**
+     * Finds an executable by name.
+     *
+     * @param string      $name      The executable name (without the extension)
+     * @param string|null $default   The default to return if no executable is found
+     * @param array       $extraDirs Additional dirs to check into
+     */
+    public function find(string $name, string $default = null, array $extraDirs = []): ?string
+    {
+        if (\ini_get('open_basedir')) {
+            $searchPath = array_merge(explode(\PATH_SEPARATOR, \ini_get('open_basedir')), $extraDirs);
+            $dirs = [];
+            foreach ($searchPath as $path) {
+                // Silencing against https://bugs.php.net/69240
+                if (@is_dir($path)) {
+                    $dirs[] = $path;
+                } else {
+                    if (basename($path) == $name && @is_executable($path)) {
+                        return $path;
+                    }
+                }
+            }
+        } else {
+            $dirs = array_merge(
+                explode(\PATH_SEPARATOR, getenv('PATH') ?: getenv('Path')),
+                $extraDirs
+            );
+        }
+
+        $suffixes = [''];
+        if ('\\' === \DIRECTORY_SEPARATOR) {
+            $pathExt = getenv('PATHEXT');
+            $suffixes = array_merge($pathExt ? explode(\PATH_SEPARATOR, $pathExt) : $this->suffixes, $suffixes);
+        }
+        foreach ($suffixes as $suffix) {
+            foreach ($dirs as $dir) {
+                if (@is_file($file = $dir.\DIRECTORY_SEPARATOR.$name.$suffix) && ('\\' === \DIRECTORY_SEPARATOR || @is_executable($file))) {
+                    return $file;
+                }
+            }
+        }
+
+        return $default;
+    }
+}
+
+class PhpExecutableFinder
+{
+    private $executableFinder;
+
+    public function __construct()
+    {
+        $this->executableFinder = new ExecutableFinder();
+    }
+
+    /**
+     * Finds The PHP executable.
+     */
+    public function find(bool $includeArgs = true): string|false
+    {
+        if ($php = getenv('PHP_BINARY')) {
+            if (!is_executable($php)) {
+                $command = '\\' === \DIRECTORY_SEPARATOR ? 'where' : 'command -v';
+                if ($php = strtok(exec($command.' '.escapeshellarg($php)), \PHP_EOL)) {
+                    if (!is_executable($php)) {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+
+            if (@is_dir($php)) {
+                return false;
+            }
+
+            return $php;
+        }
+
+        $args = $this->findArguments();
+        $args = $includeArgs && $args ? ' '.implode(' ', $args) : '';
+
+        // PHP_BINARY return the current sapi executable
+        if (\PHP_BINARY && \in_array(\PHP_SAPI, ['cgi-fcgi', 'cli', 'cli-server', 'phpdbg'], true)) {
+            return \PHP_BINARY.$args;
+        }
+
+        if ($php = getenv('PHP_PATH')) {
+            if (!@is_executable($php) || @is_dir($php)) {
+                return false;
+            }
+
+            return $php;
+        }
+
+        if ($php = getenv('PHP_PEAR_PHP_BIN')) {
+            if (@is_executable($php) && !@is_dir($php)) {
+                return $php;
+            }
+        }
+
+        if (@is_executable($php = \PHP_BINDIR.('\\' === \DIRECTORY_SEPARATOR ? '\\php.exe' : '/php')) && !@is_dir($php)) {
+            return $php;
+        }
+
+        $dirs = [\PHP_BINDIR];
+        if ('\\' === \DIRECTORY_SEPARATOR) {
+            $dirs[] = 'C:\xampp\php\\';
+        }
+
+        return $this->executableFinder->find('php', false, $dirs);
+    }
+
+    /**
+     * Finds the PHP executable arguments.
+     */
+    public function findArguments(): array
+    {
+        $arguments = [];
+        if ('phpdbg' === \PHP_SAPI) {
+            $arguments[] = '-qrr';
+        }
+
+        return $arguments;
+    }
+}
+

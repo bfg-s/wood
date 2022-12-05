@@ -52,23 +52,28 @@ class ModelObserverGenerator extends GeneratorAbstract
         }
     }
 
-    protected function provider()
-    {
-        $provider = app(ClassFactory::class)
-            ->class(AppServiceProvider::class);
-
-        $method = $provider->publicMethod(['void', 'boot']);
-        foreach ($this->observers as $observer) {
-
-            $method->row($this->class->class . ' Observer ' . $observer->id)
-                ->staticCall(
-                    $this->class->class,
-                    'observe',
-                    Comcode::useIfClass(
-                        $observer->class->class,
-                        $provider
-                    ) . "::class"
-                );
-        }
-    }
+//    protected function provider()
+//    {
+//        $observers = $this->observers;
+//
+//        if ($observers->isNotEmpty()) {
+//
+//            $provider = app(ClassFactory::class)
+//                ->class("App\\Providers\\BfgWoodProvider");
+//
+//            $method = $provider->publicMethod(['void', 'boot']);
+//            foreach ($observers as $observer) {
+//
+//                $method->row('Observer ' . $observer->id)
+//                    ->staticCall(
+//                        $this->class->class,
+//                        'observe',
+//                        Comcode::useIfClass(
+//                            $observer->class->class,
+//                            $provider
+//                        ) . "::class"
+//                    );
+//            }
+//        }
+//    }
 }

@@ -2,7 +2,9 @@
 
 namespace Bfg\Wood\Generators;
 
+use Bfg\Comcode\Comcode;
 use Bfg\Comcode\Subjects\DocSubject;
+use Bfg\Wood\ClassFactory;
 use Bfg\Wood\Generators\ModelGenerator\ModelFactoryGenerator;
 use Bfg\Wood\Generators\ModelGenerator\ModelMigrationGenerator;
 use Bfg\Wood\Generators\ModelGenerator\ModelObserverGenerator;
@@ -325,5 +327,25 @@ class ModelGenerator extends GeneratorAbstract
                     ->tagVar('array<int, string>')
             );
         }
+    }
+
+    protected function finish(): void
+    {
+        $provider = app(ClassFactory::class)
+            ->class("App\\Providers\\BfgWoodProvider");
+
+        $observers = [];
+
+        foreach (Model::all() as $item) {
+            foreach ($item->observers as $observer) {
+                $observers[
+                    Comcode::useIfClass($item->class->class, $provider) . '::class'
+                ][] = Comcode::useIfClass($observer->class->class, $provider) . '::class';
+            }
+        }
+
+        $provider->protectedProperty(
+            ['array', 'observers'], $observers
+        );
     }
 }

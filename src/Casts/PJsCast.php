@@ -30,6 +30,8 @@ class PJsCast implements CastsAttributes
                 : $value
         ) : null;
 
+        $value = $value ? str_replace('\'', '"', $value) : $value;
+
         return $value ? trim($value, " \t\n\r\0\x0B;") : null;
     }
 

@@ -53,7 +53,7 @@ abstract class BaseWoodCommand extends Command
                 $table->string('file');
                 $table->bigInteger('inode');
                 $table->string('name');
-                $table->morphs('topic');
+                $table->nullableMorphs('topic');
                 $table->integer('processed')->default(0);
                 $table->integer('max_property')->default(0);
                 $table->integer('max_method')->default(0);

@@ -105,15 +105,15 @@ class Model extends ModelTopic
             'regexp' => '^\w*$',
             'info' => 'The foreign field',
         ],
-        'auth' => [
-            'bool',
-            'default' => false,
-            'info' => 'Auth extension',
-        ],
         'increment' => [
             'bool',
             'default' => true,
             'info' => 'The increment',
+        ],
+        'auth' => [
+            'bool',
+            'default' => false,
+            'info' => 'Auth extension',
         ],
         'created' => [
             'bool',

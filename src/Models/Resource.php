@@ -56,6 +56,7 @@ class Resource extends ModelTopic
             'class',
             'unique' => true,
             'prepend' => "App\\Http\\Resources\\",
+            'append' => "Resource",
             'regexp' => '^([A-Z]\w*\\\\?)+(?<!\\\\)$',
             'info' => 'Resource class name',
         ],

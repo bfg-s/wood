@@ -46,20 +46,20 @@ class FactoryGenerator extends GeneratorAbstract
         });
     }
 
-    protected function database()
-    {
-        $class = app(ClassFactory::class)->class(
-            DatabaseSeeder::class
-        );
-
-        $class->publicMethod('run')
-            ->row($this->model->class->class . ' factory')
-            ->staticCall(
-                Comcode::useIfClass($this->model->class->class, $class),
-                'factory',
-                $this->count
-            )->create();
-    }
+//    protected function database()
+//    {
+//        $class = app(ClassFactory::class)->class(
+//            DatabaseSeeder::class
+//        );
+//
+//        $class->publicMethod('run')
+//            ->row($this->model->class->class . ' factory')
+//            ->staticCall(
+//                Comcode::useIfClass($this->model->class->class, $class),
+//                'factory',
+//                $this->count
+//            )->create();
+//    }
 
     protected function __afterSave()
     {

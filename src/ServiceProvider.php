@@ -2,11 +2,8 @@
 
 namespace Bfg\Wood;
 
-use Bfg\Wood\Commands\WoodCompileCommand;
 use Bfg\Wood\Commands\WoodInstallCommand;
 use Bfg\Wood\Commands\WoodRunCommand;
-use Bfg\Wood\Commands\WoodServerCommand;
-use Bfg\Wood\Commands\WorkCommand;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
@@ -22,6 +19,10 @@ class ServiceProvider extends IlluminateServiceProvider
             __DIR__ . '/../config/wood.php',
             'wood'
         );
+
+        if (class_exists("\\App\\Providers\\BfgWoodProvider")) {
+            $this->app->register("\\App\\Providers\\BfgWoodProvider");
+        }
     }
 
     /**
@@ -51,9 +52,6 @@ class ServiceProvider extends IlluminateServiceProvider
         $this->commands([
             WoodInstallCommand::class,
             WoodRunCommand::class,
-            WorkCommand::class,
-            WoodCompileCommand::class,
-            WoodServerCommand::class,
         ]);
 
         $this->app->singleton(ClassFactory::class, function () {

@@ -17,14 +17,12 @@
         "laravel/framework": "^8|^9",
         "workerman/workerman": "^4.1"
     },
+    "bin": ["bin/wood-serve"],
     "require-dev": {},
     "autoload": {
         "psr-4": {
             "Bfg\\Wood\\": "src/"
-        },
-        "files": [
-            "src/helpers.php"
-        ]
+        }
     },
     "extra": {
         "laravel": {

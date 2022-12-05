@@ -92,40 +92,39 @@ class Php extends ModelTopic
 
     /**
      * @param  ClassSubject  $subject
-     * @return void
+     * @return Php|\Illuminate\Database\Eloquent\Model|void
      */
     public static function createOrUpdatePhp(
         ClassSubject $subject
-    ): void {
-        try {
+    ) {
+        $type = $subject instanceof InterfaceSubject ? 'interface'
+            : ($subject instanceof TraitSubject ? 'trait' : ($subject instanceof AnonymousClassSubject ? 'anonymous': 'class'));
 
-            $type = $subject instanceof InterfaceSubject ? 'interface'
-                : ($subject instanceof TraitSubject ? 'trait' : ($subject instanceof AnonymousClassSubject ? 'anonymous': 'class'));
+        $file = str_replace(base_path(), '', $subject->fileSubject->file);
 
-            $file = str_replace(base_path(), '', $subject->fileSubject->file);
+        $result = static::where('file', $file)->first();
 
-            $result = static::where('file', $file)->first();
+        $data = [
+            'inode' => fileinode($subject->fileSubject->file),
+            'type' => $type,
+            'name' => $subject->class,
+        ];
 
-            $data = [
-                'inode' => fileinode($subject->fileSubject->file),
-                'type' => $type,
-                'name' => $subject->class,
-                'topic_id' => $subject->modelTopic->id,
-                'topic_type' => get_class($subject->modelTopic),
-            ];
-
-            if (! $result) {
-
-                $data['file'] = $file;
-                $data['processed'] = 0;
-
-                Php::create($data);
-            } else {
-                $result->update($data);
-                $result->increment('processed');
-            }
-        } catch (\Throwable $t) {
-            return;
+        if ($subject->modelTopic) {
+            $data['topic_id'] = $subject->modelTopic->id;
+            $data['topic_type'] = get_class($subject->modelTopic);
         }
+
+        if (! $result) {
+
+            $data['file'] = $file;
+            $data['processed'] = 0;
+
+            return Php::create($data);
+        }
+
+        $result->update($data);
+        $result->increment('processed');
+        return $result;
     }
 }

@@ -55,6 +55,7 @@ class ModelTrait extends ModelTopic
             'trait',
             'regexp' => '^[A-z]+$',
             'prepend' => "App\\Traits\\",
+            'append' => "Trait",
             'info' => 'The model trait name',
         ],
     ];

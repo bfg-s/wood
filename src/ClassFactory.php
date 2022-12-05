@@ -8,6 +8,7 @@ use Bfg\Comcode\Subjects\AnonymousClassSubject;
 use Bfg\Comcode\Subjects\ClassSubject;
 use Bfg\Comcode\Subjects\InterfaceSubject;
 use Bfg\Comcode\Subjects\TraitSubject;
+use Bfg\Wood\Generators\DefaultGenerator;
 use Bfg\Wood\Models\Php;
 use Bfg\Wood\Models\PhpSubject;
 use ErrorException;
@@ -91,6 +92,8 @@ class ClassFactory
             $subject->php = $php;
 
             $subject->modelTopic = $modelTopic;
+        } else {
+            Php::createOrUpdatePhp($subject);
         }
 
         return $this->classes[$subject->fileSubject->file]
@@ -103,6 +106,8 @@ class ClassFactory
      */
     public function generate(): static
     {
+        app()->make(DefaultGenerator::class);
+
         foreach (\Wood::getTopics() as $topic) {
 
             if ($generators = $topic::getGenerators()) {
@@ -154,7 +159,11 @@ class ClassFactory
             }
         }
 
-        foreach (Php::whereNotIn('file', $saved)->get() as $item) {
+        $php = Php::whereNotIn('file', $saved)
+            ->whereNotNull('topic_type')
+            ->get();
+
+        foreach ($php as $item) {
             @ unlink(base_path($item->file));
             $item->subjects()->delete();
             $item->delete();

@@ -54,6 +54,7 @@ class ModelImplement extends ModelTopic
         'class' => [
             'interface',
             'prepend' => "App\\Interfaces\\",
+            'append' => "Interface",
             'regexp' => '^([A-Z]\w*\\\\?)+(?<!\\\\)$',
             'info' => 'Interface name for model',
         ],

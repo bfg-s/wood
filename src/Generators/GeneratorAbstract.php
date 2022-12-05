@@ -41,6 +41,7 @@ abstract class GeneratorAbstract
 
         foreach ($this->collection() as $item) {
             $this->current = $item;
+            $last = null;
             foreach (get_class_methods($this) as $stackName) {
                 if (
                     !str_starts_with($stackName, '__')
@@ -48,7 +49,7 @@ abstract class GeneratorAbstract
                     && $stackName !== 'collection'
                     && $stackName !== 'afterSave'
                 ) {
-                    call_user_func([$this, $stackName], $item);
+                    $last = call_user_func([$this, $stackName], $last);
                 }
             }
         }

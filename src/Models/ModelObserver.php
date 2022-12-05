@@ -65,6 +65,7 @@ class ModelObserver extends ModelTopic
         'class' => [
             'class',
             'prepend' => "App\\Observers\\",
+            'append' => "Observer",
             'regexp' => '^([A-Z]\w*\\\\?)+(?<!\\\\)$',
             'info' => 'Observer class name',
         ],

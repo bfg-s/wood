@@ -88,6 +88,7 @@ class ModelRelation extends ModelTopic
             'info' => 'Related relation model',
             'copy_value_to' => [
                 ['name'],
+                ['able', 'able'],
             ],
         ],
         'name' => [
@@ -95,9 +96,6 @@ class ModelRelation extends ModelTopic
             'regexp' => '^\w+$',
             'info' => 'The relation name',
             'nullable' => true,
-            'copy_value_to' => [
-                ['able', 'able'],
-            ],
         ],
         'type' => [
             'string',
