@@ -108,6 +108,7 @@ class Model extends ModelTopic
         'increment' => [
             'bool',
             'default' => true,
+            'invisible' => true,
             'info' => 'The increment',
         ],
         'auth' => [
