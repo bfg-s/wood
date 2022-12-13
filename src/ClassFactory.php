@@ -160,7 +160,7 @@ class ClassFactory
         }
 
         $php = Php::whereNotIn('file', $saved)
-            ->whereNotNull('topic_type')
+            //->whereNotNull('topic_type')
             ->get();
 
         foreach ($php as $item) {
