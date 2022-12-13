@@ -47,7 +47,34 @@ $tcp_worker->onConnect = function ($connection) {
 };
 $tcp_worker->onMessage = function ($connection, $data) use ($php) {
     $connection->send("loading");
-    system("$php $data");
+    if (is_json($data)) {
+        $data = json_decode($data, 1);
+        foreach ($data as $datum) {
+            if (is_string($datum)) {
+                $datum = explode(" ", $datum);
+                if (($datum[0] ?? null) == 'php') {
+                    $datum[0] = $php;
+                }
+                system(implode(' ', $datum));
+            } else {
+                foreach ($datum as $item) {
+                    if (! is_array($item)) {
+                        $item = explode(" ", $item);
+                    }
+                    if (($item[0] ?? null) == 'php') {
+                        $item[0] = $php;
+                    }
+                    system(implode(' ', $item));
+                }
+            }
+        }
+    } else {
+        $data = explode(" ", $data);
+        if (($data[0] ?? null) == 'php') {
+            $data[0] = $php;
+        }
+        system(implode(' ', $data));
+    }
     $connection->send("loaded");
 };
 $tcp_worker->onClose = function ($connection) {
@@ -203,3 +230,22 @@ class PhpExecutableFinder
     }
 }
 
+if (!function_exists("is_json")) {
+
+    /**
+     * @param $string
+     * @param bool $return_data
+     * @return bool|mixed
+     */
+    function is_json($string, $return_data = false) {
+
+        if (!is_string($string)) {
+
+            return false;
+        }
+
+        $data = json_decode($string, 1);
+
+        return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
+    }
+}

@@ -261,7 +261,7 @@ class ModelGenerator extends GeneratorAbstract
     protected function casts(): void
     {
         $casts = collect($this->fields()
-            ->where('cast', '!=', 'string')
+            //->where('cast', '!=', 'string')
             ->get()
             ->mapWithKeys(
                 fn(ModelField $field) => [$field->name => $field->cast]

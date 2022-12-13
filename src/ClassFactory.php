@@ -164,7 +164,14 @@ class ClassFactory
             ->get();
 
         foreach ($php as $item) {
-            @ unlink(base_path($item->file));
+            if (
+                ! str_starts_with(
+                    $item->file,
+                    base_path('vendor')
+                )
+            ) {
+                @ unlink(base_path($item->file));
+            }
             $item->subjects()->delete();
             $item->delete();
             call_user_func($cbDel, $item->file);

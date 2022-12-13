@@ -11,6 +11,7 @@ use Bfg\Wood\Generators\GeneratorAbstract;
 use Bfg\Wood\Generators\ModelGenerator;
 use Bfg\Wood\Models\Model;
 use Bfg\Wood\Models\ModelRelation;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
@@ -30,6 +31,14 @@ class ModelMigrationGenerator extends GeneratorAbstract
     protected function collection(): Collection|array
     {
         return Model::all();
+    }
+
+    protected function extends()
+    {
+        if ($this->migration) {
+            $this->migration_class
+                ->extends(Migration::class);
+        }
     }
 
     protected function up()

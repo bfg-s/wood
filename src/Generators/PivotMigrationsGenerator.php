@@ -2,7 +2,7 @@
 
 namespace Bfg\Wood\Generators;
 
-use Bfg\Comcode\InlineTrap;
+use Illuminate\Database\Migrations\Migration;
 use Bfg\Comcode\Nodes\ClassMethodNode;
 use Bfg\Comcode\Nodes\ClosureNode;
 use Bfg\Comcode\Subjects\DocSubject;
@@ -26,6 +26,12 @@ class PivotMigrationsGenerator extends GeneratorAbstract
     {
         return ModelRelation::where('type', 'belongsToMany')
             ->get();
+    }
+
+    protected function extends()
+    {
+        $this->pivot_migration_class
+            ->extends(Migration::class);
     }
 
     protected function up()

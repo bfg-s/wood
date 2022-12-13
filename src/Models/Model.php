@@ -245,7 +245,7 @@ class Model extends ModelTopic
      */
     public function table(): string
     {
-        return strtolower(Str::snake(Str::singular(
+        return strtolower(Str::snake(Str::plural(
             class_basename($this->class->class)
         )));
     }
