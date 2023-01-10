@@ -177,32 +177,32 @@ class ModelRelation extends ModelTopic
         ],
         'with' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Always load with this relation',
         ],
         'with_count' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Always load with count of this relation rows',
         ],
         'nullable' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Is nullable relation',
         ],
         'cascade_on_update' => [
             'bool',
-            'default' => true,
+            'default' => 1,
             'info' => 'Is cascade on update',
         ],
         'cascade_on_delete' => [
             'bool',
-            'default' => true,
+            'default' => 1,
             'info' => 'Is cascade on delete',
         ],
         'null_on_delete' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Is set null on delete',
         ],
     ];

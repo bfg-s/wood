@@ -107,31 +107,31 @@ class Model extends ModelTopic
         ],
         'increment' => [
             'bool',
-            'default' => true,
+            'default' => 1,
             'invisible' => true,
             'info' => 'The increment',
         ],
         'auth' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Auth extension',
         ],
         'created' => [
             'bool',
             'name' => 'Created at',
-            'default' => true,
+            'default' => 1,
             'info' => 'Use the "created_at" field',
         ],
         'updated' => [
             'bool',
             'name' => 'Updated at',
-            'default' => true,
+            'default' => 1,
             'info' => 'Use the "updated_at" field',
         ],
         'deleted' => [
             'bool',
             'name' => 'Soft delete',
-            'default' => false,
+            'default' => 0,
             'info' => 'Use the SoftDelete and "deleted_at" field',
         ],
         'fields' => [
@@ -153,7 +153,7 @@ class Model extends ModelTopic
         'migration' => [
             'bool',
             'name' => 'Migration',
-            'default' => true,
+            'default' => 1,
             'info' => 'Automatically create migration',
         ],
     ];

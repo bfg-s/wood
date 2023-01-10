@@ -214,7 +214,7 @@ class ModelField extends ModelTopic
         ],
         'has_default' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Is field has default',
         ],
         'default' => [
@@ -225,22 +225,22 @@ class ModelField extends ModelTopic
         ],
         'hidden' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Is hidden field',
         ],
         'nullable' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Is nullable field',
         ],
         'unique' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Is unique field',
         ],
         'index' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Is index field',
         ],
         'comment' => [

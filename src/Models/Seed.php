@@ -75,7 +75,7 @@ class Seed extends ModelTopic
         ],
         'factory' => [
             'bool',
-            'default' => false,
+            'default' => 0,
             'info' => 'Use the factory',
         ],
         'count' => [
