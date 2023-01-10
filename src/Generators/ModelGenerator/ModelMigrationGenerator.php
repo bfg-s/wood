@@ -80,7 +80,7 @@ class ModelMigrationGenerator extends GeneratorAbstract
                                     ->when($field->unique, fn(InlineTrap $trap) => $trap->func('unique'))
                                     ->when($field->unsigned, fn(InlineTrap $trap) => $trap->func('unsigned'))
                                     ->when($field->index, fn(InlineTrap $trap) => $trap->func('index'))
-                                    ->when($field->type_parameters,
+                                    ->when($field->type_details,
                                         fn (InlineTrap $trap) => collect($field->type_details)->map(
                                             fn ($params, $name)
                                             => $trap->func($name, ...(is_array($params) ? $params : [$params]))
