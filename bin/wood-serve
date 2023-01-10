@@ -17,6 +17,25 @@ if (isset($argv[2]) && $argv[2] && ! is_numeric($argv[2])) {
     $port = $argv[2];
 }
 
+if (!function_exists("is_json")) {
+
+    /**
+     * @param $string
+     * @param bool $return_data
+     * @return bool|mixed
+     */
+    function is_json($string, $return_data = false) {
+
+        if (!is_string($string)) {
+
+            return false;
+        }
+
+        $data = json_decode($string, 1);
+
+        return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
+    }
+}
 
 class HookWorker extends \Workerman\Worker
 {
@@ -227,25 +246,5 @@ class PhpExecutableFinder
         }
 
         return $arguments;
-    }
-}
-
-if (!function_exists("is_json")) {
-
-    /**
-     * @param $string
-     * @param bool $return_data
-     * @return bool|mixed
-     */
-    function is_json($string, $return_data = false) {
-
-        if (!is_string($string)) {
-
-            return false;
-        }
-
-        $data = json_decode($string, 1);
-
-        return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
     }
 }
