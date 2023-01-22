@@ -33,6 +33,11 @@ abstract class ModelTopic extends Model
     /**
      * @var array
      */
+    protected static array $syncGenerators = [];
+
+    /**
+     * @var array
+     */
     public static array $schema = [];
 
     /**
@@ -283,6 +288,14 @@ abstract class ModelTopic extends Model
     }
 
     /**
+     * @return array
+     */
+    public static function getSyncGenerators(): array
+    {
+        return static::$syncGenerators;
+    }
+
+    /**
      * @param  string  $class
      * @param  string  $name
      * @return void
@@ -290,6 +303,16 @@ abstract class ModelTopic extends Model
     public static function setGenerator(string $class, string $name = 'general'): void
     {
         static::$generators[$name] = $class;
+    }
+
+    /**
+     * @param  string  $class
+     * @param  string  $name
+     * @return void
+     */
+    public static function setSyncGenerator(string $class, string $name = 'general'): void
+    {
+        static::$syncGenerators[$name] = $class;
     }
 
     public function __get($key)

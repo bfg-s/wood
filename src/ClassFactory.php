@@ -23,6 +23,8 @@ class ClassFactory
 
     protected array $generatorInstances = [];
 
+    protected array $syncGeneratorInstances = [];
+
     public function __construct()
     {
         $this->prepareComcode();
@@ -113,6 +115,26 @@ class ClassFactory
             if ($generators = $topic::getGenerators()) {
                 foreach ($generators as $generator) {
                     $this->generatorInstances[] = app()->make($generator);
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return $this
+     * @throws BindingResolutionException
+     */
+    public function syncWithExistsCode(): static
+    {
+        app()->make(\Bfg\Wood\SyncGenerators\DefaultGenerator::class);
+
+        foreach (\Wood::getTopics() as $topic) {
+
+            if ($generators = $topic::getSyncGenerators()) {
+                foreach ($generators as $generator) {
+                    $this->syncGeneratorInstances[] = app()->make($generator);
                 }
             }
         }

@@ -4,6 +4,7 @@ namespace Bfg\Wood;
 
 use Bfg\Wood\Commands\WoodInstallCommand;
 use Bfg\Wood\Commands\WoodRunCommand;
+use Bfg\Wood\Commands\WoodSyncCommand;
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 
@@ -52,6 +53,7 @@ class ServiceProvider extends IlluminateServiceProvider
         $this->commands([
             WoodInstallCommand::class,
             WoodRunCommand::class,
+            WoodSyncCommand::class,
         ]);
 
         $this->app->singleton(ClassFactory::class, function () {

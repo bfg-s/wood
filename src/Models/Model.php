@@ -8,6 +8,7 @@ use Bfg\Wood\Casts\AnonymousClassCast;
 use Bfg\Wood\Generators\PivotMigrationsGenerator;
 use Bfg\Wood\Generators\ModelGenerator;
 use Bfg\Wood\ModelTopic;
+use Bfg\Wood\SyncGenerators\ModelSyncGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
@@ -70,6 +71,13 @@ class Model extends ModelTopic
     protected static array $generators = [
         'general' => ModelGenerator::class,
         'belongsToManyMigrations' => PivotMigrationsGenerator::class,
+    ];
+
+    /**
+     * @var array|string[]
+     */
+    protected static array $syncGenerators = [
+        'general' => ModelSyncGenerator::class,
     ];
 
     /**
