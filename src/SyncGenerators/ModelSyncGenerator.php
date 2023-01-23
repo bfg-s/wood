@@ -3,6 +3,7 @@
 namespace Bfg\Wood\SyncGenerators;
 
 use Bfg\Wood\Models\Model;
+use Bfg\Wood\Models\Php;
 use Bfg\Wood\Models\Topic;
 use Bfg\Attributes\Attributes;
 use Illuminate\Support\Collection;
@@ -27,6 +28,7 @@ class ModelSyncGenerator extends SyncGeneratorAbstract
             ->filter(
                 fn (ReflectionClass $class)
                 => $class->isSubclassOf(\Illuminate\Database\Eloquent\Model::class)
+                && Php::where('name', $class->getName())->doesntExist()
             );
     }
 
@@ -97,9 +99,11 @@ class ModelSyncGenerator extends SyncGeneratorAbstract
             $cast = $casts[$fieldName] ?? 'string';
             $field = $model->fields()->where('name', $fieldName)->first();
             if (! $field) {
-                $field = $model->fields()->create(['name' => $fieldName]);
-                $field->update([
+                $model->fields()->create([
+                    'name' => $fieldName,
                     'cast' => $cast,
+                    'type_parameters' => [],
+                    'type_details' => [],
                 ]);
             }
         }
@@ -127,12 +131,17 @@ class ModelSyncGenerator extends SyncGeneratorAbstract
     {
         foreach ($this->getInterfaceNames() as $interface) {
 
-            $traitClass = $model->implements()->where('class', $interface)->first();
+            $parentInterfaces = $this->getParentClass()->getInterfaceNames();
 
-            if (! $traitClass) {
-                $model->implements()->create([
-                    'class' => $interface
-                ]);
+            if (! in_array($interface, $parentInterfaces)) {
+
+                $interfaceClass = $model->implements()->where('class', $interface)->first();
+
+                if (! $interfaceClass) {
+                    $model->implements()->create([
+                        'class' => $interface
+                    ]);
+                }
             }
         }
 

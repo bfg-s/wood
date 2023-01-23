@@ -211,6 +211,7 @@ class ModelField extends ModelTopic
             'array',
             'taggable' => true,
             'info' => 'The field type parameters',
+            'default' => [],
         ],
         'has_default' => [
             'bool',

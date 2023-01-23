@@ -6,6 +6,9 @@ use Bfg\Comcode\Comcode;
 use Bfg\Comcode\Subjects\ClassSubject;
 use Bfg\Comcode\Subjects\DocSubject;
 use Bfg\Wood\ClassFactory;
+use Bfg\Wood\Core\ResponseEvent;
+use Bfg\Wood\Models\Controller;
+use Bfg\Wood\Models\ControllerMethod;
 use Bfg\Wood\Models\Event;
 use Bfg\Wood\Models\EventListener;
 use Bfg\Wood\Models\Model;
@@ -41,6 +44,10 @@ class EventGenerator extends GeneratorAbstract
                 $subject->name('Create a new event instance.');
                 $subject->tagReturn('void');
             });
+
+        if (ControllerMethod::where('event_id', $this->id)->exists()) {
+            $this->class->extends(ResponseEvent::class);
+        }
 
         $this->class->trait(Dispatchable::class);
         $this->class->trait(InteractsWithSockets::class);

@@ -3,6 +3,7 @@
 namespace Bfg\Wood;
 
 use Bfg\Wood\Models\Config;
+use Bfg\Wood\Models\Controller;
 use Bfg\Wood\Models\Event;
 use Bfg\Wood\Models\Model;
 use Bfg\Wood\Models\Factory;
@@ -20,6 +21,7 @@ class WoodCore
     protected array $topics = [
         'model' => Model::class,
         'event' => Event::class,
+        'controller' => Controller::class,
         'factory' => Factory::class,
         'seed' => Seed::class,
         'observer' => ModelObserver::class,

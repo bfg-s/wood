@@ -12,6 +12,7 @@ use Bfg\Wood\Generators\DefaultGenerator;
 use Bfg\Wood\Models\Php;
 use Bfg\Wood\Models\PhpSubject;
 use ErrorException;
+use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
 class ClassFactory
@@ -60,10 +61,19 @@ class ClassFactory
      * @param  string  $value
      * @param  ModelTopic|null  $modelTopic
      * @return Subject
+     * @throws Exception
      */
     public function watchClass(string $type, string $value, ?ModelTopic $modelTopic): ClassSubject
     {
-        $subject = \php()->{$type}($value);
+        try {
+            $subject = \php()->{$type}($value);
+        } catch (\Throwable $exception) {
+            throw new Exception(
+                "PARSE ERROR\n[$type]:[$value]\n" . $exception->getMessage(),
+                $exception->getCode(),
+                $exception
+            );
+        }
 
         if (isset($this->classes[$subject->fileSubject->file])) {
 
@@ -87,7 +97,15 @@ class ClassFactory
                             base_path($file)
                         );
                     }
-                    $subject = \php()->{$type}($value);
+                    try {
+                        $subject = \php()->{$type}($value);
+                    } catch (\Throwable $exception) {
+                        throw new Exception(
+                            "PARSE ERROR\n[$type]:[$value]\n" . $exception->getMessage(),
+                            $exception->getCode(),
+                            $exception
+                        );
+                    }
                 }
             }
 
