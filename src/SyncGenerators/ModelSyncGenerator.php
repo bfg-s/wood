@@ -48,6 +48,7 @@ class ModelSyncGenerator extends SyncGeneratorAbstract
             $model = Model::create([
                 'class' => $this->getName(),
                 'order' => Model::count(),
+                'migration' => 0,
             ]);
         }
 
