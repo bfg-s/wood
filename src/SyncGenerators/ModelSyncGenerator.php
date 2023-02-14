@@ -47,7 +47,7 @@ class ModelSyncGenerator extends SyncGeneratorAbstract
 
             $model = Model::create([
                 'class' => $this->getName(),
-                'order' => Model::count(),
+                'order' => Model::max('order')+1,
                 'migration' => 0,
             ]);
         }
