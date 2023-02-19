@@ -11,6 +11,11 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 class ClassCast implements CastsAttributes
 {
     /**
+     * @var array
+     */
+    protected static array $_cache = [];
+
+    /**
      * Cast the given value.
      *
      * @param  ModelTopic  $model
@@ -18,11 +23,16 @@ class ClassCast implements CastsAttributes
      * @param  mixed  $value
      * @param  array  $attributes
      * @return ClassSubject
-     * @throws ErrorException
      */
     public function get($model, string $key, $value, array $attributes): ClassSubject
     {
-        return app(ClassFactory::class)
+        $key = $model::class . '-' . $model->id . '-' . $key;
+
+        if (isset(ClassCast::$_cache[$key])) {
+            return ClassCast::$_cache[$key];
+        }
+
+        return ClassCast::$_cache[$key] = app(ClassFactory::class)
             ->class($value, $model);
     }
 

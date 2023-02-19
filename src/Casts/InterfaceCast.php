@@ -11,6 +11,11 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 class InterfaceCast implements CastsAttributes
 {
     /**
+     * @var array
+     */
+    protected static array $_cache = [];
+
+    /**
      * Cast the given value.
      *
      * @param  ModelTopic  $model
@@ -18,11 +23,16 @@ class InterfaceCast implements CastsAttributes
      * @param  mixed  $value
      * @param  array  $attributes
      * @return InterfaceSubject
-     * @throws ErrorException
      */
     public function get($model, string $key, $value, array $attributes): InterfaceSubject
     {
-        return app(ClassFactory::class)
+        $key = $model::class . '-' . $model->id . '-' . $key;
+
+        if (isset(InterfaceCast::$_cache[$key])) {
+            return InterfaceCast::$_cache[$key];
+        }
+
+        return InterfaceCast::$_cache[$key] = app(ClassFactory::class)
             ->interface($value, $model);
     }
 

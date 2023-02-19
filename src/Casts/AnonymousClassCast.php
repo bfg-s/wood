@@ -11,6 +11,11 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 class AnonymousClassCast implements CastsAttributes
 {
     /**
+     * @var array
+     */
+    protected static array $_cache = [];
+
+    /**
      * Cast the given value.
      *
      * @param  ModelTopic  $model
@@ -21,7 +26,13 @@ class AnonymousClassCast implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes): AnonymousClassSubject
     {
-        return app(ClassFactory::class)
+        $key = $model::class . '-' . $model->id . '-' . $key;
+
+        if (isset(AnonymousClassCast::$_cache[$key])) {
+            return AnonymousClassCast::$_cache[$key];
+        }
+
+        return AnonymousClassCast::$_cache[$key] = app(ClassFactory::class)
             ->anonymousClass($value, $model);
     }
 

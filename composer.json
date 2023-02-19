@@ -1,21 +1,22 @@
 {
     "name": "bfg/wood",
-    "description": "",
+    "description": "Laravel's advanced framework controller for a quick start, change your framework quickly and easily. Automate all the same tasks.",
     "type": "bfg-app",
-    "keywords": ["laravel", "extension", "wood"],
+    "keywords": ["laravel", "extension", "wood", "scaffold", "quick start", "bfg"],
     "license": "MIT",
     "authors": [
         {
-            "name": "bfg"
+            "name": "Bfg",
+            "email": "bfg.script@gmail.com"
         }
     ],
     "prefer-stable": true,
     "require": {
         "php": ">=8.0.0",
-        "bfg/comcode": "^0.6.10",
+        "bfg/comcode": "^0.6.11",
         "bfg/attributes": "^1.2",
         "elementaryframework/fire-fs": "^1.2",
-        "laravel/framework": "^8|^9",
+        "laravel/framework": "^8.0|^9.0|^10.0",
         "workerman/workerman": "^4.1"
     },
     "bin": ["bin/wood-serve"],
