@@ -26,7 +26,6 @@ class WoodRunCommand extends BaseWoodCommand
     public function handle(): int
     {
         Comcode::on('apply', [$this, 'apply']);
-        Comcode::on('parsed', [$this, 'parsed']);
 
         app(ClassFactory::class)
             ->generate()
@@ -34,7 +33,7 @@ class WoodRunCommand extends BaseWoodCommand
                 fn (ClassSubject $subject)
                 => $this->info("Saved: " . str_replace(base_path(), '', $subject->fileSubject->file)),
                 fn (string $path)
-                => $this->error("Deleted: " . $path),
+                => $this->comment("Deleted: " . $path),
             );
 
         $this->info('Finished!');
@@ -45,10 +44,5 @@ class WoodRunCommand extends BaseWoodCommand
     public function apply(SubjectAbstract $subject)
     {
         $this->info("Apply changes for: " . $subject->fileSubject->file);
-    }
-
-    public function parsed(SubjectAbstract $subject)
-    {
-        $this->comment("Parsed file: " . str_replace(base_path(), '', $subject->fileSubject->file));
     }
 }
