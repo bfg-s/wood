@@ -249,10 +249,12 @@ class ModelField extends ModelTopic
             'string',
             'nullable' => true,
             'info' => 'The table field comment',
+            'full_width' => true,
         ],
         'type_details' => [
             'array',
             'info' => 'The field type details',
+            'full_width' => true,
             'variants' => [
                 'Unsigned' => ['unsigned' => []],
                 'Primary' => ['primary' => []],
