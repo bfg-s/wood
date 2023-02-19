@@ -268,7 +268,7 @@ class ModelRelation extends ModelTopic
 
             $reverse_type = $this->reverse_type ?: config("wood.relation_types." . $this->type . ".reverses");
             $cfg = config("wood.relation_types." . $reverse_type);
-            return call_user_func([Str::class, $cfg['declinations']], $value);
+            return Str::camel(call_user_func([Str::class, $cfg['declinations']], $value));
         }
 
         return $value;
