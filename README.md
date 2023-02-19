@@ -6,10 +6,9 @@ composer require bfg/wood
 ```
 
 ## Description
-coming soon...
+Laravel's advanced framework controller for a quick start,
+change your framework quickly and easily.
+Automate all the same tasks.
 
-## About the concept.
-coming soon...
-
-## Where can I use it?
-coming soon...
+## More details.
+(https://wood.veskod.com/)[https://wood.veskod.com/]
