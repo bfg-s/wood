@@ -266,6 +266,10 @@ class ModelRelation extends ModelTopic
 
         if ($this->type) {
 
+            if ($value === 'null') {
+                $value = $this->model()->first()->table();
+            }
+
             $reverse_type = $this->reverse_type ?: config("wood.relation_types." . $this->type . ".reverses");
             $cfg = config("wood.relation_types." . $reverse_type);
             return Str::camel(call_user_func([Str::class, $cfg['declinations']], $value));
