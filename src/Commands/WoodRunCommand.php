@@ -43,6 +43,6 @@ class WoodRunCommand extends BaseWoodCommand
 
     public function apply(SubjectAbstract $subject)
     {
-        $this->info("Apply changes for: " . $subject->fileSubject->file);
+        $this->info("Apply changes for: " . str_replace(base_path(), '', $subject->fileSubject->file));
     }
 }
