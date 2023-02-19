@@ -24,8 +24,12 @@ class InterfaceCast implements CastsAttributes
      * @param  array  $attributes
      * @return InterfaceSubject
      */
-    public function get($model, string $key, $value, array $attributes): InterfaceSubject
+    public function get($model, string $key, $value, array $attributes): object
     {
+        if (str_starts_with($value, 'Illuminate')) {
+            return (object)['class' => $value];
+        }
+
         $key = $model::class . '-' . $model->id . '-' . $key;
 
         if (isset(InterfaceCast::$_cache[$key])) {

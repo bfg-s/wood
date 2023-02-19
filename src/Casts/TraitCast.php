@@ -24,8 +24,12 @@ class TraitCast implements CastsAttributes
      * @param  array  $attributes
      * @return TraitSubject
      */
-    public function get($model, string $key, $value, array $attributes): TraitSubject
+    public function get($model, string $key, $value, array $attributes): object
     {
+        if (str_starts_with($value, 'Illuminate')) {
+            return (object)['class' => $value];
+        }
+
         $key = $model::class . '-' . $model->id . '-' . $key;
 
         if (isset(TraitCast::$_cache[$key])) {
