@@ -112,6 +112,7 @@ class Model extends ModelTopic
             'if_not' => 'increment',
             'regexp' => '^\w*$',
             'info' => 'The foreign field',
+            'editable' => false,
         ],
         'increment' => [
             'bool',
