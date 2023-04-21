@@ -79,7 +79,9 @@ class PhpSubject extends ModelTopic
                     'processed' => $php->{"max_" . $type},
                 ]);
             } else {
-                $subject->increment('processed');
+                $subject->update([
+                    'processed' => $php->processed
+                ]);
             }
         }
     }

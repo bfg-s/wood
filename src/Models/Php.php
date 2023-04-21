@@ -20,6 +20,7 @@ use ReflectionException;
  * @property int $inode
  * @property int $max_property
  * @property int $max_method
+ * @property int $processed
  * @property string $name
  * @method static \Illuminate\Database\Eloquent\Builder|Php newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Php newQuery()
