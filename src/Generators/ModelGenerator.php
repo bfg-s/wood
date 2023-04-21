@@ -197,7 +197,6 @@ class ModelGenerator extends GeneratorAbstract
     protected function fillable(): void
     {
         $names = $this->fields()
-            ->where('hidden', false)
             ->pluck('name');
 
         $foreigns = $this->related()
