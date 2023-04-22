@@ -31,18 +31,4 @@ class DefaultGenerator extends GeneratorAbstract
 
         return $subject;
     }
-
-    protected function makeMethods(ClassSubject $subject)
-    {
-//        $subject->publicMethod(['void', 'register'])->comment(
-//            fn (DocSubject $doc)
-//            => $doc->name('Register any application services.')
-//                ->tagReturn('void')
-//        );
-//        $subject->publicMethod(['void', 'boot'])->comment(
-//            fn (DocSubject $doc)
-//            => $doc->name('Bootstrap any application services.')
-//                ->tagReturn('void')
-//        );
-    }
 }

@@ -37,36 +37,12 @@ class FactoryGenerator extends GeneratorAbstract
         $method = $this->class->publicMethod('definition');
 
         $method->return(php()->real($this->lines->mapWithKeys(
-            fn (FactoryLine $line) => [$line->field => $line->php]
+            fn (FactoryLine $line) => [$line->field => php()->rawForArray($line->php)]
         )->toArray()));
 
         $method->comment(function (DocSubject $subject) {
             $subject->name("Define the model's default state.");
             $subject->tagReturn('array<string, mixed>');
         });
-    }
-
-//    protected function database()
-//    {
-//        $class = app(ClassFactory::class)->class(
-//            DatabaseSeeder::class
-//        );
-//
-//        $class->publicMethod('run')
-//            ->row($this->model->class->class . ' factory')
-//            ->staticCall(
-//                Comcode::useIfClass($this->model->class->class, $class),
-//                'factory',
-//                $this->count
-//            )->create();
-//    }
-
-    protected function __afterSave()
-    {
-        $content = $this->class->fileSubject->content();
-        foreach ($this->lines as $line) {
-            $content = str_replace("'$line->php'", $line->php, $content);
-        }
-        file_put_contents($this->class->fileSubject->file, $content);
     }
 }
