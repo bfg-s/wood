@@ -57,11 +57,17 @@ class PhpSubject extends ModelTopic
      */
     public $timestamps = false;
 
+    /**
+     * @param  ClassSubject  $subject
+     * @param  ClassMethodNode|ClassPropertyNode  $node
+     * @param  string  $type
+     * @return void
+     */
     public static function createOrUpdateSubject(
         ClassSubject $subject,
         ClassMethodNode|ClassPropertyNode $node,
         string $type,
-    ) {
+    ): void {
         /** @var null|Php $php */
         $php = $subject->php;
         if ($php) {
@@ -80,7 +86,7 @@ class PhpSubject extends ModelTopic
                 ]);
             } else {
                 $subject->update([
-                    'processed' => $php->processed
+                    'processed' => $php->{"max_" . $type}
                 ]);
             }
         }
