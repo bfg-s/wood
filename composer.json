@@ -1,6 +1,6 @@
 {
     "name": "bfg/wood",
-    "description": "Laravel's advanced framework controller for a quick start, change your framework quickly and easily. Automate all the same tasks.",
+    "description": "Laravel's advanced framework controller for a code generation, change your framework quickly and easily. Automate all the same tasks with best code generator.",
     "type": "bfg-app",
     "keywords": ["laravel", "extension", "wood", "scaffold", "quick start", "bfg"],
     "license": "MIT",
