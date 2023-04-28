@@ -11,7 +11,10 @@ use Bfg\Wood\ModelTopic;
 use Bfg\Wood\SyncGenerators\ModelSyncGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Symfony\Component\Finder\SplFileInfo;
 
 /**
  * Bfg\Wood\Models\Model
@@ -168,6 +171,12 @@ class Model extends ModelTopic
     ];
 
     /**
+     * Migrations file store
+     * @var array
+     */
+    protected static array $fileStore = [];
+
+    /**
      * @return HasMany
      */
     public function implements(): HasMany
@@ -237,14 +246,26 @@ class Model extends ModelTopic
     public function getMigrationClassAttribute(): AnonymousClassSubject
     {
         $date = config('wood.migration_prepend', '2022_12_01');
+        $ends = "_create_".$this->table()."_table.php";
+        $path = "migrations/{$date}_"
+            . str_repeat('0', 6 - strlen($this->order))
+            . $this->order . $ends;
+
+        if (static::$fileStore) {
+            $collectOfFiles = collect(static::$fileStore);
+        } else {
+            $collectOfFiles = collect(File::allFiles(database_path('migrations')))
+                ->map(fn (SplFileInfo $info) => str_replace(database_path() . '/', '', $info->getPathname()));
+            static::$fileStore = $collectOfFiles->toArray();
+        }
+
+        $file = $collectOfFiles->filter(fn (string $file) => str_ends_with($file, $ends))
+            ->first();
+
         return (new AnonymousClassCast())->get(
             $this,
             'migration_class',
-            database_path(
-                "migrations/{$date}_"
-                .str_repeat('0', 6 - strlen($this->order))
-                .$this->order."_create_".$this->table()."_table.php"
-            ),
+            database_path($file ?: $path),
             $this->attributes
         );
     }
