@@ -9,11 +9,13 @@ use Bfg\Wood\Generators\ModelGenerator\ModelFactoryGenerator;
 use Bfg\Wood\Generators\ModelGenerator\ModelMigrationGenerator;
 use Bfg\Wood\Generators\ModelGenerator\ModelObserverGenerator;
 use Bfg\Wood\Generators\ModelGenerator\ModelRelationGenerator;
+use Bfg\Wood\Models\Factory;
 use Bfg\Wood\Models\Model;
 use Bfg\Wood\Models\ModelField;
 use Bfg\Wood\Models\ModelImplement;
 use Bfg\Wood\Models\ModelTrait;
 use Bfg\Wood\Models\Topic;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 
@@ -93,6 +95,11 @@ class ModelGenerator extends GeneratorAbstract
         } else {
             $this->class->forgetTrait(
                 SoftDeletes::class
+            );
+        }
+        if (Factory::where('model_id', $this->id)->exists()) {
+            $this->class->trait(
+                HasFactory::class
             );
         }
     }

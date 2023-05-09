@@ -242,7 +242,6 @@ class ClassFactory
             /** @var PhpSubject $method */
             foreach ($listMethods as $method) {
                 $subject->forgetMethod($method->name);
-                //dump("Delete method: " . $method->name . ", Max: " . $maxMethod . ", Current: " . $method->processed);
                 $method->delete();
             }
 
@@ -255,7 +254,6 @@ class ClassFactory
             /** @var PhpSubject $property */
             foreach ($listProperties as $property) {
                 $subject->forgetProperty($property->name);
-                //dump("Delete property: " . $property->name . ", Max: " . $maxProperty . ", Current: " . $property->processed);
                 $property->delete();
             }
         }

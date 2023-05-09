@@ -34,7 +34,7 @@ class WoodCore
      */
     public function getTopics(): array
     {
-        return array_values($this->topics);
+        return $this->topics;
     }
 
     /**

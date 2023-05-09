@@ -2,7 +2,11 @@
 
 namespace Bfg\Wood;
 
+use Bfg\Wood\Commands\WoodBuildCommand;
+use Bfg\Wood\Commands\WoodImportCommand;
 use Bfg\Wood\Commands\WoodInstallCommand;
+use Bfg\Wood\Commands\WoodParseAndRunCommand;
+use Bfg\Wood\Commands\WoodParseCommand;
 use Bfg\Wood\Commands\WoodRunCommand;
 use Bfg\Wood\Commands\WoodSyncCommand;
 use Illuminate\Support\Arr;
@@ -51,9 +55,11 @@ class ServiceProvider extends IlluminateServiceProvider
         ], 'database.connections.'));
 
         $this->commands([
-            WoodInstallCommand::class,
             WoodRunCommand::class,
             WoodSyncCommand::class,
+            WoodBuildCommand::class,
+            WoodImportCommand::class,
+            WoodInstallCommand::class,
         ]);
 
         $this->app->singleton(ClassFactory::class, function () {

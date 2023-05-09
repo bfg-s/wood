@@ -248,10 +248,14 @@ class ModelRelation extends ModelTopic
      */
     public function getNameAttribute($value): string
     {
+        if (!$value && $model = $this->related_model) {
+            $value = Str::singular(Str::snake(class_basename($model->class->class)));
+        }
+
         if ($this->type) {
 
             $cfg = config("wood.relation_types." . $this->type);
-            return call_user_func([Str::class, $cfg['declinations']], $value);
+            return call_user_func([Str::class, $cfg['declinations']], $value ?: '');
         }
         return $value;
     }
@@ -276,6 +280,16 @@ class ModelRelation extends ModelTopic
         }
 
         return $value;
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public function getAbleAttribute($value): string
+    {
+        $prep = $value ? "" : " able";
+        return Str::singular($value ?: $this->model()->first()->table()) . $prep;
     }
 
     /**

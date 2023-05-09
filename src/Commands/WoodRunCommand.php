@@ -5,6 +5,7 @@ namespace Bfg\Wood\Commands;
 use Bfg\Comcode\Comcode;
 use Bfg\Comcode\Subjects\ClassSubject;
 use Bfg\Comcode\Subjects\SubjectAbstract;
+use Bfg\Wood\ArrayFactory;
 use Bfg\Wood\ClassFactory;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
@@ -41,7 +42,11 @@ class WoodRunCommand extends BaseWoodCommand
         return 0;
     }
 
-    public function apply(SubjectAbstract $subject)
+    /**
+     * @param  SubjectAbstract  $subject
+     * @return void
+     */
+    public function apply(SubjectAbstract $subject): void
     {
         $this->info("Apply changes for: " . str_replace(base_path(), '', $subject->fileSubject->file));
     }
