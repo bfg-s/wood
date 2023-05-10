@@ -39,9 +39,8 @@ class ImportFactory
      */
     public function save(): void
     {
-        //$file = database_path('wood.json');
-        //file_put_contents($file, json_encode($this->data, JSON_PRETTY_PRINT));
-        dd($this->data);
+        $file = database_path('wood.json');
+        file_put_contents($file, json_encode($this->data, JSON_PRETTY_PRINT));
     }
 
     protected function getParseTopik(ModelTopic $topik, ModelTopic|HasMany|HasOne $parentGet, $ignoreField = null): array
