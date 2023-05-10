@@ -10,9 +10,6 @@ Laravel's advanced framework controller for a code generation,
 change your framework quickly and easily.
 Automate all the same tasks with best code generator.
 
-## Application documentation
-We have extensive [documentation](https://wood.veskod.com/documentation/wood-application/install) in which you can get acquainted with the bfg wood.
-
 ## Json mode demo
 [![Wood json demo](https://github.com/bfg-s/wood/blob/62b72711cf12ddaf4bb8efb8a106ad4aedbe0f31/assets/Bfg_wood_demo_video.gif "Wood json demo")](https://github.com/bfg-s/wood/blob/62b72711cf12ddaf4bb8efb8a106ad4aedbe0f31/assets/Bfg_wood_demo_video.gif "Wood json demo")
 
@@ -152,7 +149,10 @@ We have extensive [documentation](https://wood.veskod.com/documentation/wood-app
 }
 ```
 
-## Demo
+## Application documentation
+We have extensive [documentation](https://wood.veskod.com/documentation/wood-application/install) in which you can get acquainted with the bfg wood.
+
+## Application Demo
 [![Wood demo](https://github.com/bfg-s/wood/blob/30f968b7b50d42675e441de6d98b06c34d216052/assets/wood-gif.gif "Wood demo")](https://github.com/bfg-s/wood/blob/30f968b7b50d42675e441de6d98b06c34d216052/assets/wood-gif.gif "Wood demo")
 
 ## More details.
