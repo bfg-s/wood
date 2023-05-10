@@ -14,7 +14,7 @@ Automate all the same tasks with best code generator.
 We have extensive [documentation](https://wood.veskod.com/documentation/wood-application/install) in which you can get acquainted with the bfg wood.
 
 ## Json mode demo
-[![Wood json demo](https://github.com/bfg-s/wood/blob/d288f098620d657a6076cd25b97cb953d32bd15e/assets/Bfg_wood_demo_video.gif "Wood json demo")](https://github.com/bfg-s/wood/blob/d288f098620d657a6076cd25b97cb953d32bd15e/assets/Bfg_wood_demo_video.gif "Wood json demo")
+[![Wood json demo](https://github.com/bfg-s/wood/blob/62b72711cf12ddaf4bb8efb8a106ad4aedbe0f31/assets/Bfg_wood_demo_video.gif "Wood json demo")](https://github.com/bfg-s/wood/blob/62b72711cf12ddaf4bb8efb8a106ad4aedbe0f31/assets/Bfg_wood_demo_video.gif "Wood json demo")
 
 ### Commands
  * `php artisan wood:install` - Set the initial database for the generator
