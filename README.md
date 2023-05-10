@@ -1,4 +1,4 @@
-# Extension wood
+# Extension laravel wood
 
 ## Install
 ```bash
