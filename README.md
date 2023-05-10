@@ -14,7 +14,7 @@ Automate all the same tasks with best code generator.
 [![Wood json demo](https://github.com/bfg-s/wood/blob/32fb956353772ee474487569c5af060882e2195b/assets/Bfg_wood_demo_video.gif "Wood json demo")](https://github.com/bfg-s/wood/blob/32fb956353772ee474487569c5af060882e2195b/assets/Bfg_wood_demo_video.gif "Wood json demo")
 
 ## Quick start
-In order to start generating in json format, run the `php artisan wood:install` command in order to create the generator database, then create a json file using the `php artisan wood:import` command, after which in your folder `database` file `wood.json` will appear. In it, you describe your files according to the scheme. Once the schema is complete, we call the `php artisan wood:build` command to collect all the changes.
+In order to start generating in json format, run the `php artisan wood:install` command in order to create the generator database, then create a json file using the `php artisan wood:import` command, after which in your folder `database` file `wood.json` will appear. In it, you describe your files according to the scheme. Once the schema is complete, we call the `php artisan wood:build` command to collect all the changes. And every time you change the schema, jason runs the `php artisan wood:build` command.
 
 ### Commands
  * `php artisan wood:install` - Set the initial database for the generator
