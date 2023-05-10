@@ -11,7 +11,7 @@ change your framework quickly and easily.
 Automate all the same tasks with best code generator.
 
 ## Json mode demo
-[![Wood json demo](https://github.com/bfg-s/wood/blob/62b72711cf12ddaf4bb8efb8a106ad4aedbe0f31/assets/Bfg_wood_demo_video.gif "Wood json demo")](https://github.com/bfg-s/wood/blob/62b72711cf12ddaf4bb8efb8a106ad4aedbe0f31/assets/Bfg_wood_demo_video.gif "Wood json demo")
+[![Wood json demo](https://github.com/bfg-s/wood/blob/32fb956353772ee474487569c5af060882e2195b/assets/Bfg_wood_demo_video.gif "Wood json demo")](https://github.com/bfg-s/wood/blob/32fb956353772ee474487569c5af060882e2195b/assets/Bfg_wood_demo_video.gif "Wood json demo")
 
 ### Commands
  * `php artisan wood:install` - Set the initial database for the generator
