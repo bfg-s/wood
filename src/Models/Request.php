@@ -67,9 +67,11 @@ class Request extends ModelTopic
         'access' => [
             'pjs',
             'default' => 'true',
+            'invisible' => true,
             'info' => 'Access method return',
         ],
         'rules' => [
+            'invisible' => true,
             'info' => 'Request rule list',
         ],
     ];
