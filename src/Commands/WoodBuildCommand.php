@@ -39,7 +39,7 @@ class WoodBuildCommand extends BaseWoodCommand
 
             $this->info('Parse is finished!');
         } catch (
-        ParseHasPossibleVariants|InvalidValueByRegexp|UndefinedDataForParameter $exception
+            ParseHasPossibleVariants|InvalidValueByRegexp|UndefinedDataForParameter $exception
         ) {
             $this->error($exception->getMessage());
         }

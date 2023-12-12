@@ -13,6 +13,7 @@ use Bfg\Wood\Models\Factory;
 use Bfg\Wood\Models\Model;
 use Bfg\Wood\Models\ModelField;
 use Bfg\Wood\Models\ModelImplement;
+use Bfg\Wood\Models\ModelRelation;
 use Bfg\Wood\Models\ModelTrait;
 use Bfg\Wood\Models\Topic;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -206,7 +207,7 @@ class ModelGenerator extends GeneratorAbstract
         $names = $this->fields()
             ->pluck('name');
 
-        $foreigns = $this->related()
+        $foreigns = $this->relations()
             ->where('type', '!=', 'belongsToMany')
             ->where('type', '!=', 'morphTo')
             ->where('type', '!=', 'morphOne')
@@ -214,7 +215,7 @@ class ModelGenerator extends GeneratorAbstract
             ->where('type', '!=', 'morphToMany')
             ->where('type', '!=', 'morphedByMany')
             ->get()
-            ->pluck('foreign');
+            ->map(fn (ModelRelation $relation) => $relation->related_model->foreign_id);
 
         $morphForeigns = $this->related()
             ->whereIn('type', [
@@ -273,7 +274,7 @@ class ModelGenerator extends GeneratorAbstract
                 fn(ModelField $field) => [$field->name => $field->cast]
             ));
 
-        $foreigns = $this->related()
+        $foreigns = $this->relations()
             ->where('type', '!=', 'belongsToMany')
             ->where('type', '!=', 'morphTo')
             ->where('type', '!=', 'morphOne')
@@ -281,7 +282,7 @@ class ModelGenerator extends GeneratorAbstract
             ->where('type', '!=', 'morphToMany')
             ->where('type', '!=', 'morphedByMany')
             ->get()
-            ->pluck('foreign')
+            ->map(fn (ModelRelation $relation) => $relation->related_model->foreign_id)
             ->mapWithKeys(fn ($i) => [$i => 'int']);
 
         $casts = $casts->merge($foreigns);

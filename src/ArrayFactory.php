@@ -6,6 +6,7 @@ use Bfg\Wood\Exceptions\InvalidValueByRegexp;
 use Bfg\Wood\Exceptions\ParseHasPossibleVariants;
 use Bfg\Wood\Exceptions\UndefinedDataForParameter;
 use Illuminate\Support\Str;
+use Symfony\Component\Yaml\Yaml;
 
 class ArrayFactory
 {
@@ -15,6 +16,11 @@ class ArrayFactory
     protected array $data = [];
 
     /**
+     * @var bool
+     */
+    protected bool $yaml = false;
+
+    /**
      * @return $this
      * @throws InvalidValueByRegexp
      * @throws ParseHasPossibleVariants
@@ -22,9 +28,16 @@ class ArrayFactory
      */
     public function parse(): static
     {
-        $file = database_path('wood.json');
-        if (is_file($file)) {
-            $this->data = json_decode(file_get_contents($file), 1);
+        $fileYaml = database_path('wood.yaml');
+        if (is_file($fileYaml)) {
+            $this->data = Yaml::parse(file_get_contents($fileYaml));
+            $this->yaml = true;
+        } else {
+
+            $file = database_path('wood.json');
+            if (is_file($file)) {
+                $this->data = json_decode(file_get_contents($file), 1);
+            }
         }
 
         foreach (\Wood::getTopics() as $topic) {
@@ -96,8 +109,15 @@ class ArrayFactory
      */
     public function save(): void
     {
-        $file = database_path('wood.json');
-        file_put_contents($file, json_encode($this->data, JSON_PRETTY_PRINT));
+        if ($this->yaml) {
+
+            $file = database_path('wood.yaml');
+            file_put_contents($file, preg_replace("/-\n\s+/m", '- ', Yaml::dump($this->data, 20, 2)));
+        } else {
+
+            $file = database_path('wood.json');
+            file_put_contents($file, json_encode($this->data, JSON_PRETTY_PRINT));
+        }
     }
 
     /**
