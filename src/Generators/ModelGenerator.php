@@ -215,7 +215,7 @@ class ModelGenerator extends GeneratorAbstract
             ->where('type', '!=', 'morphToMany')
             ->where('type', '!=', 'morphedByMany')
             ->get()
-            ->map(fn (ModelRelation $relation) => $relation->related_model->foreign_id);
+            ->map(fn (ModelRelation $relation) => $relation->foreign);
 
         $morphForeigns = $this->related()
             ->whereIn('type', [
@@ -282,7 +282,7 @@ class ModelGenerator extends GeneratorAbstract
             ->where('type', '!=', 'morphToMany')
             ->where('type', '!=', 'morphedByMany')
             ->get()
-            ->map(fn (ModelRelation $relation) => $relation->related_model->foreign_id)
+            ->map(fn (ModelRelation $relation) => $relation->foreign)
             ->mapWithKeys(fn ($i) => [$i => 'int']);
 
         $casts = $casts->merge($foreigns);
