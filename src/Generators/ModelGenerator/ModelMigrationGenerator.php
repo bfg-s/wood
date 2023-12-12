@@ -88,7 +88,7 @@ class ModelMigrationGenerator extends GeneratorAbstract
                                     );
                             }
 
-                            $foreigns = $this->related()
+                            $foreigns = $this->relations()
                                 ->where('type', '!=', 'belongsToMany')
                                 ->where('type', '!=', 'morphTo')
                                 ->where('type', '!=', 'morphOne')
@@ -101,9 +101,9 @@ class ModelMigrationGenerator extends GeneratorAbstract
                             /** @var ModelRelation $foreign */
                             foreach ($foreigns as $foreign) {
                                 $node->line()->var('table')
-                                    ->func('foreignId', $foreign->foreign)
+                                    ->func('foreignId', $foreign->related_model->foreign_id)
                                     ->when($foreign->nullable, fn(InlineTrap $trap) => $trap->func('nullable'))
-                                    ->func('constrained', $foreign->model->table())
+                                    ->func('constrained', $foreign->related_model->table())
                                     ->when($foreign->cascade_on_update,
                                         fn(InlineTrap $trap) => $trap->func('cascadeOnUpdate'))
                                     ->when($foreign->cascade_on_delete,
