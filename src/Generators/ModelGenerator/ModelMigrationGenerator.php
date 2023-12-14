@@ -101,7 +101,7 @@ class ModelMigrationGenerator extends GeneratorAbstract
                             /** @var ModelRelation $foreign */
                             foreach ($foreigns as $foreign) {
                                 $node->line()->var('table')
-                                    ->func('foreignId', $foreign->foreign)
+                                    ->func('foreignId', $foreign->related_model->foreign_id)
                                     ->when($foreign->nullable, fn(InlineTrap $trap) => $trap->func('nullable'))
                                     ->func('constrained', $foreign->related_model->table())
                                     ->when($foreign->cascade_on_update,
