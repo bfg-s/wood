@@ -246,7 +246,7 @@ class Model extends ModelTopic
     public function getMigrationClassAttribute(): AnonymousClassSubject
     {
         //$createdAt = $this->created_at ? $this->created_at->format('Y_m_d') : null;
-        $date = '2023_01_01';
+        $date = config('wood.migration_prepend', '2023_01_01');
         $ends = "_create_".$this->table()."_table.php";
         $path = "migrations/{$date}_"
             . str_repeat('0', 6 - strlen($this->order))

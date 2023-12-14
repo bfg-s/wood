@@ -1,6 +1,9 @@
 <?php
 
 return [
+    /**
+     * Connection driver for wood database
+     */
     'connection' => [
         'driver' => 'sqlite',
         'url' => null,
@@ -8,6 +11,10 @@ return [
         'prefix' => '',
         'foreign_key_constraints' => true
     ],
+
+    /**
+     * Definition of relation types
+     */
     'relation_types' => [
         'hasMany' => [
             'class' => \Illuminate\Database\Eloquent\Relations\HasMany::class,
@@ -55,4 +62,9 @@ return [
             'declinations' => 'plural',
         ],
     ],
+
+    /**
+     * Prepend date for migration file name
+     */
+    'migration_prepend' => '2023_01_01',
 ];

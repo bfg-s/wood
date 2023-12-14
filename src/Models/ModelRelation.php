@@ -325,7 +325,7 @@ class ModelRelation extends ModelTopic
         $model = $this->model()->first();
         $table = $model->table() . '_' . $this->name;
 
-        $date = config('wood.migration_prepend', '2022_12_01');
+        $date = config('wood.migration_prepend', '2023_01_01');
         return (new AnonymousClassCast())->get(
             $this,
             'migration_class',
