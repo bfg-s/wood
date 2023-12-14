@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
  * @property string $relation_class
  * @property string|null $able
  * @property string $foreign
+ * @property string $foreign_id
  * @property bool $with
  * @property bool $with_count
  * @property bool $nullable
