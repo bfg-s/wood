@@ -38,7 +38,7 @@ class ModelRelationGenerator extends GeneratorAbstract
                     $item,
                     $this->__makeRealClass($item->related_model->class->class),
                     'id',
-                    $item->foreign,
+                    $item->related_model->foreign_id,
                 );
             }
         }
@@ -51,7 +51,7 @@ class ModelRelationGenerator extends GeneratorAbstract
                 $this->__related_method(
                     $item,
                     $this->__makeRealClass($item->model()->first()->class->class),
-                    $item->foreign,
+                    $item->related_model->foreign_id,
                     'id',
                 );
             }
