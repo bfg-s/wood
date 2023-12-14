@@ -74,7 +74,7 @@ class ModelMigrationGenerator extends GeneratorAbstract
                                     ->when($field->nullable, fn(InlineTrap $trap) => $trap->func('nullable'))
                                     ->when($field->has_default,
                                         fn(InlineTrap $trap) => $trap->func('default',
-                                            $field->default === 'null' ? 0 : ($field->default ?: 0)))
+                                            $field->default === 'null' ? '' : $field->default))
                                     ->when($field->comment,
                                         fn(InlineTrap $trap) => $trap->func('comment', $field->comment))
                                     ->when($field->unique, fn(InlineTrap $trap) => $trap->func('unique'))
