@@ -44,7 +44,6 @@ class ModelMigrationGenerator extends GeneratorAbstract
     protected function up()
     {
         if ($this->migration) {
-
             $this->migration_class
                 ?->publicMethod('up')->clear()
                 ->and(
@@ -74,16 +73,17 @@ class ModelMigrationGenerator extends GeneratorAbstract
                                     ->func($field->type, $field->name, ...($field->type_parameters ?? []))
                                     ->when($field->nullable, fn(InlineTrap $trap) => $trap->func('nullable'))
                                     ->when($field->has_default,
-                                        fn(InlineTrap $trap) => $trap->func('default', $field->default))
+                                        fn(InlineTrap $trap) => $trap->func('default',
+                                            $field->default === 'null' ? 0 : ($field->default ?: 0)))
                                     ->when($field->comment,
                                         fn(InlineTrap $trap) => $trap->func('comment', $field->comment))
                                     ->when($field->unique, fn(InlineTrap $trap) => $trap->func('unique'))
                                     ->when($field->unsigned, fn(InlineTrap $trap) => $trap->func('unsigned'))
                                     ->when($field->index, fn(InlineTrap $trap) => $trap->func('index'))
                                     ->when($field->type_details,
-                                        fn (InlineTrap $trap) => collect($field->type_details)->map(
-                                            fn ($params, $name)
-                                            => $trap->func($name, ...(is_array($params) ? $params : [$params]))
+                                        fn(InlineTrap $trap) => collect($field->type_details)->map(
+                                            fn($params, $name) => $trap->func($name, ...
+                                                (is_array($params) ? $params : [$params]))
                                         )
                                     );
                             }
@@ -168,7 +168,6 @@ class ModelMigrationGenerator extends GeneratorAbstract
     protected function down()
     {
         if ($this->migration) {
-
             $this->migration_class
                 ?->publicMethod('down')->clear()
                 ->and(
