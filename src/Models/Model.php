@@ -11,7 +11,6 @@ use Bfg\Wood\ModelTopic;
 use Bfg\Wood\SyncGenerators\ModelSyncGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\SplFileInfo;
@@ -245,7 +244,6 @@ class Model extends ModelTopic
      */
     public function getMigrationClassAttribute(): AnonymousClassSubject
     {
-        //$createdAt = $this->created_at ? $this->created_at->format('Y_m_d') : null;
         $date = config('wood.migration_prepend', '2023_01_01');
         $ends = "_create_".$this->table()."_table.php";
         $path = "migrations/{$date}_"
@@ -263,10 +261,14 @@ class Model extends ModelTopic
         $file = $collectOfFiles->filter(fn (string $file) => str_ends_with($file, $ends))
             ->first();
 
+        try {
+            unlink($file);
+        } catch (\Throwable) {}
+
         return (new AnonymousClassCast())->get(
             $this,
             'migration_class',
-            database_path($file ?: $path),
+            database_path($path),
             $this->attributes
         );
     }
