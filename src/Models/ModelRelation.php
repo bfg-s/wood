@@ -235,6 +235,14 @@ class ModelRelation extends ModelTopic
     /**
      * @return string
      */
+    public function getForeignIdAttribute(): string
+    {
+        return Str::snake(Str::singular($this->name)) . '_id';
+    }
+
+    /**
+     * @return string
+     */
     public function getRelationClassAttribute(): string
     {
         return config(
