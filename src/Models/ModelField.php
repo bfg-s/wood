@@ -176,7 +176,6 @@ class ModelField extends ModelTopic
                 'double' => ['cast' => 'double'],
                 'enum' => ['cast' => 'string'],
                 'float' => ['cast' => 'float'],
-                'foreign' => ['cast' => 'integer'],
                 'foreignId' => ['cast' => 'integer'],
                 'increments' => ['cast' => 'integer'],
                 'integer' => ['cast' => 'integer'],
