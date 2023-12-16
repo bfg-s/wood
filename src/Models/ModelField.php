@@ -116,7 +116,9 @@ class ModelField extends ModelTopic
             'reversed_types' => [
                 'string' => 'string',
                 'integer' => 'integer',
+                'int' => 'integer',
                 'boolean' => 'boolean',
+                'bool' => 'boolean',
                 'timestamp' => 'timestamp',
                 'array' => 'json',
                 'double' => 'float',
