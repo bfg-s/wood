@@ -122,6 +122,11 @@ class ModelRelation extends ModelTopic
                 'morphMany' => ['reverse_type' => 'morphTo'],
                 'morphToMany' => ['reverse_type' => 'morphedByMany'],
                 'belongsToMany' => ['reverse_type' => 'belongsToMany'],
+                'hasManyThrough' => ['reverse_type' => 'hasOneThrough'],
+                'hasOneThrough' => ['reverse_type' => 'hasManyThrough'],
+                'belongsTo' => ['reverse_type' => 'hasMany'],
+                'morphTo' => ['reverse_type' => 'morphMany'],
+                'morphedByMany' => ['reverse_type' => 'morphToMany'],
             ],
             'pluralize' => [
                 ['hasMany', 'plural', 'name'],
