@@ -166,8 +166,8 @@ class ModelGenerator extends GeneratorAbstract
      */
     protected function foreign(): void
     {
-        if ($this->increment && $this->increment != 'id') {
-            $this->class->protectedProperty('primaryKey', php()->real())
+        if ($this->increment && $this->foreign != 'id') {
+            $this->class->protectedProperty('primaryKey', php()->real($this->foreign))
                 ->comment(
                     fn(DocSubject $doc) => $doc->name('The primary key for the model.')
                         ->tagVar('string')
