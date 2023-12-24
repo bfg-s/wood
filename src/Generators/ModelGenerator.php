@@ -268,11 +268,55 @@ class ModelGenerator extends GeneratorAbstract
     protected function casts(): void
     {
         $casts = collect($this->fields()
-            //->where('cast', '!=', 'string')
+            ->unless(config('wood.publish_string_casts'), fn ($q) => $q->where('cast', '!=', 'string'))
             ->get()
-            ->mapWithKeys(
-                fn(ModelField $field) => [$field->name => $field->cast]
-            ));
+            ->mapWithKeys(function (ModelField $field) {
+                $cast = $field->cast;
+
+                if (str_ends_with($cast, 'Cast')) {
+                    $cast = Comcode::useIfClass(
+                        $field->cast_class->class,
+                        $this->class
+                    ) . '::class';
+                    $field->cast_class
+                        ->method('public', 'get')
+                        ->expectParams(
+                            ['model', null, null],
+                            ['key', null, 'string'],
+                            ['value', null, null],
+                            ['attributes', null, 'array'],
+                        )->comment(
+                            fn(DocSubject $doc) => $doc->name('Cast the given value.')
+                                ->tagParam(\Illuminate\Database\Eloquent\Model::class, 'model')
+                                ->tagParam('string', 'key')
+                                ->tagParam('mixed', 'value')
+                                ->tagParam('array', 'attributes')
+                                ->tagReturn('mixed')
+                        )->return('value');
+                    $field->cast_class
+                        ->method('public', 'set')
+                        ->expectParams(
+                            ['model', null, null],
+                            ['key', null, 'string'],
+                            ['value', null, null],
+                            ['attributes', null, 'array'],
+                        )->comment(
+                            fn(DocSubject $doc) => $doc->name('Prepare the given value for storage.')
+                                ->tagParam(\Illuminate\Database\Eloquent\Model::class, 'model')
+                                ->tagParam('string', 'key')
+                                ->tagParam('mixed', 'value')
+                                ->tagParam('array', 'attributes')
+                                ->tagReturn('mixed')
+                        )->return('value');
+                } else if (str_ends_with($cast, 'Enum')) {
+                    $cast = Comcode::useIfClass(
+                            $field->enum_class->class,
+                            $this->class
+                        ) . '::class';
+                }
+
+                return [$field->name => $cast];
+            }));
 
         $foreigns = $this->relations()
             ->where('type', '!=', 'belongsToMany')

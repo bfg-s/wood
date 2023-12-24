@@ -12,8 +12,8 @@
     ],
     "prefer-stable": true,
     "require": {
-        "php": ">=8.0.0",
-        "bfg/comcode": "^1.0.0",
+        "php": "^8.0",
+        "bfg/comcode": "^1.1.0",
         "bfg/attributes": "^1.2",
         "elementaryframework/fire-fs": "^1.2",
         "laravel/framework": "^8.0|^9.0|^10.0",

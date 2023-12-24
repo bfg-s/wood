@@ -64,6 +64,11 @@ return [
     ],
 
     /**
+     * Add string casts to general cast list
+     */
+    'publish_string_casts' => false,
+
+    /**
      * Prepend date for migration file name
      */
     'migration_prepend' => '2023_01_01',

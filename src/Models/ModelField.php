@@ -2,10 +2,18 @@
 
 namespace Bfg\Wood\Models;
 
+use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Comcode\Subjects\EnumSubject;
+use Bfg\Wood\Casts\ClassCast;
+use Bfg\Wood\Casts\EnumCast;
 use Bfg\Wood\ModelTopic;
+use ErrorException;
+use Exception;
 
 /**
- * Bfg\Wood\Models\ModelField
+ * Class ModelField
+ *
+ * Represents a model field.
  *
  * @property int $id
  * @property string $name
@@ -27,6 +35,8 @@ use Bfg\Wood\ModelTopic;
  * @property int $null_on_delete
  * @property int $order
  * @property int $model_id
+ * @property ClassSubject $cast_class
+ * @property EnumSubject $enum_class
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|ModelField newModelQuery()
@@ -59,26 +69,37 @@ use Bfg\Wood\ModelTopic;
 class ModelField extends ModelTopic
 {
     /**
-     * @var string
+     * @var string $modelIcon
+     * The icon class for the model.
+     * It is a string that represents the icon to be used for the model.
+     * The class should follow the format "{library-prefix} {icon-name}".
+     * The class "far fa-comment-dots" represents the "comment-dots" icon from the "Font Awesome Regular" library.
+     * Update this variable according to the desired icon for the model.
      */
     public string $modelIcon = 'far fa-comment-dots';
 
     /**
-     * @var string|null
+     * @var string|null $modelName The name of the model fields
      */
     public ?string $modelName = 'Model fields';
 
     /**
      * @var string|null
+     * The description of the model fields.
      */
     public ?string $modelDescription = 'The model fields';
 
     /**
      * @var string|null
+     * @desc The fully qualified class name of the parent model class.
      */
     public ?string $parent = Model::class;
 
     /**
+     * Schema declaration array.
+     *
+     * The $schema array defines the structure and properties of a field in a model.
+     *
      * @var array
      */
     public static array $schema = [
@@ -288,4 +309,26 @@ class ModelField extends ModelTopic
             ]
         ],
     ];
+
+    /**
+     * Get the cast class attribute for the model field.
+     *
+     * @return ClassSubject The cast class attribute.
+     * @throws ErrorException
+     */
+    public function getCastClassAttribute(): ClassSubject
+    {
+        return (new ClassCast())->get($this, 'cast', "App\\Casts\\{$this->cast}", []);
+    }
+
+    /**
+     * Retrieve the enum class attribute for the model field.
+     *
+     * @return ClassSubject The enum class attribute for the model field.
+     * @throws Exception
+     */
+    public function getEnumClassAttribute(): ClassSubject
+    {
+        return (new EnumCast())->get($this, 'cast', "App\\Enums\\{$this->cast}", []);
+    }
 }

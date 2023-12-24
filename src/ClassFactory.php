@@ -6,6 +6,7 @@ use Bfg\Comcode\Nodes\ClassMethodNode;
 use Bfg\Comcode\Nodes\ClassPropertyNode;
 use Bfg\Comcode\Subjects\AnonymousClassSubject;
 use Bfg\Comcode\Subjects\ClassSubject;
+use Bfg\Comcode\Subjects\EnumSubject;
 use Bfg\Comcode\Subjects\InterfaceSubject;
 use Bfg\Comcode\Subjects\TraitSubject;
 use Bfg\Wood\Generators\DefaultGenerator;
@@ -82,8 +83,8 @@ class ClassFactory
 
         if ($modelTopic) {
 
-            $classType = $subject instanceof InterfaceSubject ? 'interface'
-                : ($subject instanceof TraitSubject ? 'trait' : ($subject instanceof AnonymousClassSubject ? 'anonymous': 'class'));
+            $classType = $subject instanceof EnumSubject ? 'enum' : ($subject instanceof InterfaceSubject ? 'interface'
+                : ($subject instanceof TraitSubject ? 'trait' : ($subject instanceof AnonymousClassSubject ? 'anonymous': 'class')));
 
             $php = Php::where('inode', fileinode($subject->fileSubject->file))->first();
             $php = $php ?: Php::findByTopic($modelTopic, $classType);
@@ -263,6 +264,7 @@ class ClassFactory
      * @param  string  $file
      * @param  ModelTopic|null  $modelTopic
      * @return AnonymousClassSubject
+     * @throws Exception
      */
     public function anonymousClass(string $file, ModelTopic $modelTopic = null): AnonymousClassSubject
     {
@@ -275,6 +277,7 @@ class ClassFactory
      * @param  string  $class
      * @param  ModelTopic|null  $modelTopic
      * @return ClassSubject
+     * @throws Exception
      */
     public function class(string $class, ModelTopic $modelTopic = null): ClassSubject
     {
@@ -287,6 +290,7 @@ class ClassFactory
      * @param  string  $class
      * @param  ModelTopic|null  $modelTopic
      * @return InterfaceSubject
+     * @throws Exception
      */
     public function interface(string $class, ModelTopic $modelTopic = null): InterfaceSubject
     {
@@ -299,11 +303,25 @@ class ClassFactory
      * @param  string  $class
      * @param  ModelTopic|null  $modelTopic
      * @return TraitSubject
+     * @throws Exception
      */
     public function trait(string $class, ModelTopic $modelTopic = null): TraitSubject
     {
         return$this->watchClass(
             'trait', $class, $modelTopic
+        );
+    }
+
+    /**
+     * @param  string  $class
+     * @param  ModelTopic|null  $modelTopic
+     * @return EnumSubject
+     * @throws Exception
+     */
+    public function enum(string $class, ModelTopic $modelTopic = null): EnumSubject
+    {
+        return $this->watchClass(
+            'enum', $class, $modelTopic
         );
     }
 }
